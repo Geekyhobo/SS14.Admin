@@ -1,0 +1,54 @@
+﻿@page
+@using SS14.Admin.Pages.Tables
+@using SS14.Admin.Helpers
+@model SS14.Admin.Pages.PermissonsModel
+
+@{
+    ViewData["Title"] = "Permissions";
+}
+
+<partial name="Shared/StatusMessageAlert" />
+
+<div class="container">
+    <h2>Edit Admin Permissions</h2>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Title</th>
+            <th>Rank</th>
+            <th>Permissions</th>
+            <th>Edit</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var admin in Model.Admins)
+        {
+            <tr>
+                <td><a asp-page="/Players/Info" asp-route-userId="@admin.UserId">@admin.UserName</a></td>
+                <td>@admin.Title</td>
+                <td>@admin.RankName</td>
+                <td>
+                    @foreach (var flag in admin.Flags)
+                    {
+                        <span>@flag </span>
+                    }
+                </td>
+                <td>
+                    <a href="/EditPermissions/@admin.UserId"><i class="fas fa-user-cog"></i></a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+
+

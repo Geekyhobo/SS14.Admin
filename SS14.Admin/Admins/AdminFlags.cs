@@ -3,6 +3,7 @@
     /// <summary>
     ///     Permissions that admins can have.
     /// </summary>
+    /// This should be populated from the main repo
     [Flags]
     public enum AdminFlags : uint
     {

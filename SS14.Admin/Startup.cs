@@ -34,6 +34,8 @@ namespace SS14.Admin
 
             services.AddDbContext<PostgresServerDbContext>(options => options.UseNpgsql(connStr));
 
+            services.AddScoped<PermissionsHelper>();
+
             services.AddControllers();
             services.AddRazorPages(options =>
             {

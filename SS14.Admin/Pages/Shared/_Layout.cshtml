@@ -73,6 +73,12 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-page="/Whitelist/Index">Whitelist</a>
                     </li>
+                    @if (User.IsInRole("PERMISSIONS"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-page="/Permissions/Index">Permissions</a>
+                                </li>
+                            }
                 </ul>
             </div>
         </div>

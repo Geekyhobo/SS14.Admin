@@ -12,4 +12,8 @@
     <a class="btn btn-primary" asp-page="./Logs/Index">Logs</a>
     <a class="btn btn-primary" asp-page="./Characters/Index">Characters</a>
     <a class="btn btn-primary" asp-page="./Whitelist/Index">Whitelist</a>
+    @if (User.IsInRole("PERMISSIONS"))
+        {
+            <a class="btn btn-primary" asp-page="./Permissions/Index">Permissions</a>
+        }
 </div>
