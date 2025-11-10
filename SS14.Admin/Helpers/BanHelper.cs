@@ -2,7 +2,6 @@
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Claims;
 using Content.Server.Database;
 using Content.Shared.Database;
 using Microsoft.AspNetCore.Components.Authorization;
