@@ -15,7 +15,7 @@ public partial class ConnectionHits : IDisposable
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     [Inject]
-    private BanHelper? BanHelper { get; set; }
+    private BanHelper? _banHelper { get; set; }
 
     [Inject]
     private ClientPreferencesService? ClientPreferences { get; set; }
@@ -111,31 +111,77 @@ public partial class ConnectionHits : IDisposable
         {
             var now = DateTime.UtcNow;
 
-            // Load bans that were hit by this connection
-            var bansQuery = from hit in context.ServerBanHit.AsNoTracking()
-                            join banJoin in BanHelper!.CreateServerBanJoin(context) on hit.BanId equals banJoin.Ban.Id
-                            where hit.ConnectionId == ConnectionId
-                            select banJoin;
+            // Load ban IDs hit by this connection
+            var hitBanIds = await context.ServerBanHit
+                .AsNoTracking()
+                .Where(hit => hit.ConnectionId == ConnectionId)
+                .Select(hit => hit.BanId)
+                .ToListAsync();
 
-            var banEntities = await bansQuery.ToListAsync();
-
-            // Map to view models with proper HWID formatting
-            _banHits = banEntities.Select(banJoin => new BanHitViewModel
+            if (hitBanIds.Count > 0)
             {
-                Id = banJoin.Ban.Id,
-                PlayerUserId = banJoin.Ban.PlayerUserId != null ? banJoin.Ban.PlayerUserId.ToString() : "",
-                PlayerName = banJoin.Player != null ? banJoin.Player.LastSeenUserName : "",
-                IPAddress = banJoin.Ban.Address != null ? banJoin.Ban.Address.ToString() : "",
-                Hwid = BanHelper.FormatHwid(banJoin.Ban.HWId) ?? "",
-                Reason = banJoin.Ban.Reason,
-                BanTime = banJoin.Ban.BanTime,
-                ExpirationTime = banJoin.Ban.ExpirationTime,
-                RoundId = banJoin.Ban.RoundId,
-                Admin = banJoin.Admin != null ? banJoin.Admin.LastSeenUserName : "",
-                Unban = banJoin.Ban.Unban,
-                Active = banJoin.Ban.Unban == null && (banJoin.Ban.ExpirationTime == null || banJoin.Ban.ExpirationTime > now),
-                HitCount = banJoin.Ban.BanHits.Count
-            }).ToList();
+                // Load the bans with all related data
+                var banEntities = await context.Ban
+                    .AsNoTracking()
+                    .AsSplitQuery()
+                    .Where(b => hitBanIds.Contains(b.Id))
+                    .Include(b => b.Unban)
+                    .Include(b => b.BanHits)
+                    .Include(b => b.Players)
+                    .Include(b => b.Addresses)
+                    .Include(b => b.Hwids)
+                    .Include(b => b.Rounds)
+                    .ToListAsync();
+
+                // Collect all relevant user IDs for player lookups
+                var playerIds = banEntities
+                    .Where(b => b.Players != null)
+                    .SelectMany(b => b.Players!)
+                    .Select(p => p.UserId)
+                    .ToHashSet();
+
+                var adminIds = banEntities
+                    .Where(b => b.BanningAdmin.HasValue)
+                    .Select(b => b.BanningAdmin!.Value)
+                    .ToHashSet();
+
+                var allIds = playerIds.Union(adminIds).ToList();
+
+                var playerMap = allIds.Count > 0
+                    ? await context.Player.AsNoTracking()
+                        .Where(p => allIds.Contains(p.UserId))
+                        .ToDictionaryAsync(p => p.UserId)
+                    : new Dictionary<Guid, Player>();
+
+                // Map to view models
+                _banHits = banEntities.Select(ban =>
+                {
+                    var firstPlayerId = ban.Players?.FirstOrDefault()?.UserId;
+                    Player? player = firstPlayerId.HasValue && playerMap.TryGetValue(firstPlayerId.Value, out var p) ? p : null;
+                    Player? admin = ban.BanningAdmin.HasValue && playerMap.TryGetValue(ban.BanningAdmin.Value, out var a) ? a : null;
+
+                    return new BanHitViewModel
+                    {
+                        Id = ban.Id,
+                        PlayerUserId = ban.Players?.FirstOrDefault()?.UserId.ToString() ?? "",
+                        PlayerName = player?.LastSeenUserName ?? "",
+                        IPAddress = ban.Addresses?.FirstOrDefault()?.Address.ToString() ?? "",
+                        Hwid = BanHelper.FormatHwid(ban.Hwids?.FirstOrDefault()?.HWId.ToImmutable()) ?? "",
+                        Reason = ban.Reason,
+                        BanTime = ban.BanTime,
+                        ExpirationTime = ban.ExpirationTime,
+                        RoundId = ban.Rounds?.FirstOrDefault()?.RoundId,
+                        Admin = admin?.LastSeenUserName ?? "",
+                        Unban = ban.Unban,
+                        Active = ban.Unban == null && (ban.ExpirationTime == null || ban.ExpirationTime > now),
+                        HitCount = ban.BanHits?.Count ?? 0
+                    };
+                }).ToList();
+            }
+            else
+            {
+                _banHits = new List<BanHitViewModel>();
+            }
         }
 
         _loading = false;
@@ -210,15 +256,11 @@ public partial class ConnectionHits : IDisposable
             .SingleOrDefaultAsync(b => b.Id == banId);
 
         if (ban == null)
-        {
             return;
-        }
 
         // Check if already unbanned
         if (ban.Unban != null)
-        {
             return;
-        }
 
         // Get the current admin's user ID
         var authState = await AuthenticationState!;
@@ -226,7 +268,7 @@ public partial class ConnectionHits : IDisposable
         var adminId = user.Claims.GetUserId();
 
         // Create the unban record
-        ban.Unban = new ServerUnban
+        ban.Unban = new Unban
         {
             Ban = ban,
             UnbanningAdmin = adminId,
@@ -260,7 +302,7 @@ public partial class ConnectionHits : IDisposable
         public DateTime? ExpirationTime { get; set; }
         public int? RoundId { get; set; }
         public string? Admin { get; set; }
-        public ServerUnban? Unban { get; set; }
+        public Unban? Unban { get; set; }
         public bool Active { get; set; }
         public int HitCount { get; set; }
     }

@@ -71,12 +71,12 @@ namespace SS14.Admin.Components.Forms
             }
 
             // Create a new ban instance.
-            var ban = new ServerBan
+            var ban = new Ban
             {
+                Type = BanType.Server,
                 ExemptFlags = BanModel.ExemptFlags,
                 Hidden = BanModel.Hidden,
                 Severity = BanModel.Severity,
-                BanHits = new List<ServerBanHit>()
             };
 
             // Use the helper to fill common ban fields and perform validations.

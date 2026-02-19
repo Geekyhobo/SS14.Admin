@@ -193,47 +193,51 @@ namespace SS14.Admin.Components.Pages.Players
                 .ToList();
 
             // Load bans
-            var serverBansQuery = BanHelper!.CreateServerBanJoin(context).AsNoTracking();
+            var serverBansQuery = BanHelper!.CreateServerBanJoin().AsNoTracking();
             var serverBans = SearchHelper.SearchServerBans(serverBansQuery, userId.ToString(), _user!);
+            var serverBansList = await serverBans.ToListAsync();
 
-            Bans = await serverBans
-                .Select(b => new BanViewModel
+            Bans = serverBansList.Select(b => new BanViewModel
                 {
                     Id = b.Ban.Id,
                     Reason = b.Ban.Reason,
                     BanTime = b.Ban.BanTime,
                     ExpirationTime = b.Ban.ExpirationTime,
-                    Address = b.Ban.Address != null ? b.Ban.Address.ToString() : null,
-                    Hwid = b.Ban.HWId != null ? BanHelper.FormatHwid(b.Ban.HWId) : null,
+                    Address = b.Ban.Addresses?.FirstOrDefault()?.Address.ToString(),
+                    Hwid = b.Ban.Hwids?.FirstOrDefault() != null
+                        ? BanHelper.FormatHwid(b.Ban.Hwids.First().HWId.ToImmutable())
+                        : null,
                     AdminName = b.Admin != null ? b.Admin.LastSeenUserName : "System",
                     UnbanTime = b.Ban.Unban != null ? b.Ban.Unban.UnbanTime : null,
                     UnbanAdminName = b.UnbanAdmin != null ? b.UnbanAdmin.LastSeenUserName : null,
                     IsActive = BanHelper.IsBanActive(b.Ban)
                 })
                 .OrderByDescending(b => b.BanTime)
-                .ToListAsync();
+                .ToList();
 
             // Load role bans
-            var roleBansQuery = BanHelper!.CreateRoleBanJoin(context).AsNoTracking();
+            var roleBansQuery = BanHelper!.CreateRoleBanJoin().AsNoTracking();
             var roleBans = SearchHelper.SearchRoleBans(roleBansQuery, userId.ToString(), _user!);
+            var roleBansList = await roleBans.ToListAsync();
 
-            RoleBans = await roleBans
-                .Select(b => new RoleBanViewModel
+            RoleBans = roleBansList.Select(b => new RoleBanViewModel
                 {
                     Id = b.Ban.Id,
-                    Role = b.Ban.RoleId,
+                    Role = b.Ban.Roles?.FirstOrDefault()?.RoleId ?? "",
                     Reason = b.Ban.Reason,
                     BanTime = b.Ban.BanTime,
                     ExpirationTime = b.Ban.ExpirationTime,
-                    Address = b.Ban.Address != null ? b.Ban.Address.ToString() : null,
-                    Hwid = b.Ban.HWId != null ? BanHelper.FormatHwid(b.Ban.HWId) : null,
+                    Address = b.Ban.Addresses?.FirstOrDefault()?.Address.ToString(),
+                    Hwid = b.Ban.Hwids?.FirstOrDefault() != null
+                        ? BanHelper.FormatHwid(b.Ban.Hwids.First().HWId.ToImmutable())
+                        : null,
                     AdminName = b.Admin != null ? b.Admin.LastSeenUserName : "System",
                     UnbanTime = b.Ban.Unban != null ? b.Ban.Unban.UnbanTime : null,
                     UnbanAdminName = b.UnbanAdmin != null ? b.UnbanAdmin.LastSeenUserName : null,
                     IsActive = BanHelper.IsBanActive(b.Ban)
                 })
                 .OrderByDescending(b => b.BanTime)
-                .ToListAsync();
+                .ToList();
 
             _isLoading = false;
         }
@@ -279,7 +283,7 @@ namespace SS14.Admin.Components.Pages.Players
             }
             catch (Exception)
             {
-                // Handle error silently or show a message
+                // Handle error silently or show a message (not implemented)
             }
         }
 
