@@ -4,28 +4,53 @@
 
 <PageTitle>Characters</PageTitle>
 
-<h1 class="text-2xl font-bold mb-4">Characters</h1>
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                <i class="ri-user-star-fill text-indigo-600 dark:text-indigo-500"></i>
+                Characters
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">View all character profiles</p>
+        </div>
+    </div>
 
-<CharacterFilter Filter="_filterModel" FormName="CharacterFilter" OnSubmit="OnFilterSubmit" />
+    <!-- Filter Section -->
+    <div class="px-4 sm:px-6 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div class="p-3">
+                <CharacterFilter Filter="_filterModel" FormName="CharacterFilter" OnSubmit="OnFilterSubmit" />
+            </div>
+        </div>
+    </div>
 
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-    <QuickGrid TItem="CharacterViewModel"
-               @ref="Grid"
-               Items="@_characterQuery"
-               Pagination="@_pagination"
-               Class="w-full">
-        <PropertyColumn Property="@(c => c.CharacterName)" Title="Character Name" Sortable="true" Class="text-primary-1" />
-        <PropertyColumn Property="@(c => c.PlayerName)" Title="Player Name" Sortable="true" Class="text-primary-1" />
-        <PropertyColumn Property="@(c => c.Slot)" Title="Slot" Sortable="true" Class="text-primary-1" />
-        <PropertyColumn Property="@(c => c.Species)" Title="Species" Sortable="true" Class="text-primary-1" />
-        <PropertyColumn Property="@(c => c.Age)" Title="Age" Sortable="true" Class="text-primary-1" />
-        <PropertyColumn Property="@(c => c.Sex)" Title="Sex" Sortable="true" Class="text-primary-1" />
-        <PropertyColumn Property="@(c => c.Gender)" Title="Gender" Sortable="true" Class="text-primary-1" />
-        <TemplateColumn Context="character">
-            <NavLink href="@($"players/{character.PlayerUserId}")" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                View Player
-            </NavLink>
-        </TemplateColumn>
-    </QuickGrid>
-    <Pagination OnRefreshRequired="RefreshAsync" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>
+    <!-- Characters Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mx-4 sm:mx-6 mb-4">
+        <div class="overflow-x-auto">
+            <QuickGrid TItem="CharacterViewModel"
+                       @ref="Grid"
+                       Items="@_characterQuery"
+                       Pagination="@_pagination"
+                       Class="w-full text-sm">
+                <PropertyColumn Property="@(c => c.CharacterName)" Title="Character Name" Sortable="true" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap" />
+                <PropertyColumn Property="@(c => c.PlayerName)" Title="Player Name" Sortable="true" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap" />
+                <PropertyColumn Property="@(c => c.Slot)" Title="Slot" Sortable="true" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap" />
+                <PropertyColumn Property="@(c => c.Species)" Title="Species" Sortable="true" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap" />
+                <PropertyColumn Property="@(c => c.Age)" Title="Age" Sortable="true" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap" />
+                <PropertyColumn Property="@(c => c.Sex)" Title="Sex" Sortable="true" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap" />
+                <PropertyColumn Property="@(c => c.Gender)" Title="Gender" Sortable="true" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap" />
+                <TemplateColumn Title="Actions" Context="character" class="px-4 py-2 whitespace-nowrap">
+                    <div class="flex justify-center">
+                        <NavLink href="@($"players/{character.PlayerUserId}")" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 text-white rounded-md text-sm font-medium transition-colors">
+                            <i class="ri-eye-line"></i> View Player
+                        </NavLink>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+            <Pagination OnRefreshRequired="RefreshAsync" State="@_pagination"/>
+        </div>
+    </div>
 </div>

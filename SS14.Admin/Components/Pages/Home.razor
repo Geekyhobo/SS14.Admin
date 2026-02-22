@@ -3,120 +3,119 @@
 
 <PageTitle>Home</PageTitle>
 
-<div class="space-y-6">
+<div class="min-h-screen px-4 sm:px-6 pt-4">
     <!-- Welcome Section -->
-    <div class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 rounded-lg p-6 text-white shadow-lg">
+    <div class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 rounded-lg p-6 text-white shadow-lg mb-6">
         <h2 class="text-3xl font-bold mb-2">Welcome back, @(User?.Identity?.Name ?? "Admin")!</h2>
         <p class="text-lg opacity-90">Space Station 14 Admin Panel</p>
-        <p class="text-lg opacity-90">I Made All This Data Up - Geeky</p>
     </div>
 
     <!-- Metrics Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <!-- Online Players -->
-        <div class="bg-primary-1 rounded-lg p-6 shadow-md border border-neutral-200 dark:border-neutral-700">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-muted-1 text-sm font-medium">Online Players</p>
-                    <p class="text-3xl font-bold text-primary-1 mt-2">127</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Online Players</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">127</p>
                 </div>
                 <div class="text-4xl text-green-500">
-                    <i class="ri-user-line"></i>
+                    <i class="ri-team-fill"></i>
                 </div>
             </div>
-            <p class="text-xs text-muted-1 mt-3">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
                 <span class="text-green-500">↑ 12%</span> from yesterday
             </p>
         </div>
 
         <!-- Total Bans -->
-        <div class="bg-primary-1 rounded-lg p-6 shadow-md border border-neutral-200 dark:border-neutral-700">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-muted-1 text-sm font-medium">Total Bans</p>
-                    <p class="text-3xl font-bold text-primary-1 mt-2">1,453</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Bans</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">1,453</p>
                 </div>
                 <div class="text-4xl text-red-500">
-                    <i class="ri-shield-cross-line"></i>
+                    <i class="ri-shield-cross-fill"></i>
                 </div>
             </div>
-            <p class="text-xs text-muted-1 mt-3">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
                 <span class="text-red-500">↑ 3</span> this week
             </p>
         </div>
 
         <!-- Active Admins -->
-        <div class="bg-primary-1 rounded-lg p-6 shadow-md border border-neutral-200 dark:border-neutral-700">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-muted-1 text-sm font-medium">Active Admins</p>
-                    <p class="text-3xl font-bold text-primary-1 mt-2">23</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Active Admins</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">23</p>
                 </div>
                 <div class="text-4xl text-blue-500">
-                    <i class="ri-admin-line"></i>
+                    <i class="ri-shield-keyhole-fill"></i>
                 </div>
             </div>
-            <p class="text-xs text-muted-1 mt-3">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
                 <span class="text-blue-500">5</span> online now
             </p>
         </div>
 
         <!-- Actions Today -->
-        <div class="bg-primary-1 rounded-lg p-6 shadow-md border border-neutral-200 dark:border-neutral-700">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-muted-1 text-sm font-medium">Admin Actions</p>
-                    <p class="text-3xl font-bold text-primary-1 mt-2">89</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Admin Actions</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">89</p>
                 </div>
                 <div class="text-4xl text-purple-500">
-                    <i class="ri-file-list-line"></i>
+                    <i class="ri-file-list-3-fill"></i>
                 </div>
             </div>
-            <p class="text-xs text-muted-1 mt-3">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
                 <span class="text-purple-500">24h</span> period
             </p>
         </div>
     </div>
 
     <!-- Secondary Metrics -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Recent Reports -->
-        <div class="bg-primary-1 rounded-lg p-6 shadow-md border border-neutral-200 dark:border-neutral-700">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- Pending Reports -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-primary-1">Pending Reports</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Pending Reports</h3>
                 <span class="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs font-medium px-2.5 py-0.5 rounded">12</span>
             </div>
-            <p class="text-muted-1 text-sm">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">
                 Awaiting review and action
             </p>
         </div>
 
         <!-- Server Uptime -->
-        <div class="bg-primary-1 rounded-lg p-6 shadow-md border border-neutral-200 dark:border-neutral-700">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-primary-1">Server Uptime</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Server Uptime</h3>
                 <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded">99.9%</span>
             </div>
-            <p class="text-muted-1 text-sm">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">
                 47 days running
             </p>
         </div>
 
         <!-- Warnings Issued -->
-        <div class="bg-primary-1 rounded-lg p-6 shadow-md border border-neutral-200 dark:border-neutral-700">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-primary-1">Warnings Issued</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Warnings Issued</h3>
                 <span class="bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 text-xs font-medium px-2.5 py-0.5 rounded">156</span>
             </div>
-            <p class="text-muted-1 text-sm">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">
                 This month
             </p>
         </div>
     </div>
 
     <!-- Your Permissions -->
-    <div class="bg-primary-1 rounded-lg p-6 shadow-md border border-neutral-200 dark:border-neutral-700">
-        <h3 class="text-xl font-semibold text-primary-1 mb-4">Your Permissions</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Permissions</h3>
         <div class="flex flex-wrap gap-2">
             @foreach (var role in Enum.GetNames<AdminFlags>())
             {
@@ -124,7 +123,7 @@
                     continue;
 
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800">
-                    <i class="ri-shield-check-line mr-1"></i>
+                    <i class="ri-shield-keyhole-fill mr-1"></i>
                     @role
                 </span>
             }

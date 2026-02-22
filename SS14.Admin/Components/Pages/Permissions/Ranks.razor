@@ -5,27 +5,44 @@
 
 <PageTitle>Manage Ranks</PageTitle>
 
-<div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Manage Ranks</h1>
-    <NavLink href="/permissions/ranks/new" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-        Add New Rank
-    </NavLink>
-</div>
-
-<QuickGrid
-           @ref="Grid"
-           ItemsProvider="@_rankProvider"
-           Pagination="@_pagination"
-           Class="grow">
-    <PropertyColumn Property="@(rank => rank.Name)" Title="Rank Name" Class="text-primary-1"></PropertyColumn>
-    <TemplateColumn Title="Flags" Context="rank">
-        @FormatFlags(rank.Flags)
-    </TemplateColumn>
-    <TemplateColumn Title="Edit Rank" Context="rank">
-        <NavLink href="@($"/permissions/ranks/{rank.Name}")" class="btn btn-primary">
-            Edit
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                <i class="ri-layout-grid-fill text-purple-600 dark:text-purple-500"></i>
+                Manage Ranks
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">Create and edit permission ranks</p>
+        </div>
+        <NavLink href="/permissions/ranks/new" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors">
+            <i class="fas fa-plus"></i> Add New Rank
         </NavLink>
-    </TemplateColumn>
-</QuickGrid>
+    </div>
 
-<Pagination OnRefreshRequired="Refresh" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>
+    <!-- Ranks Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mx-4 sm:mx-6 mb-4">
+        <div class="overflow-x-auto">
+            <QuickGrid
+                   @ref="Grid"
+                   ItemsProvider="@_rankProvider"
+                   Pagination="@_pagination"
+                   Class="w-full text-sm">
+                <PropertyColumn Property="@(rank => rank.Name)" Title="Rank Name" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <TemplateColumn Title="Flags" Context="rank" class="px-4 py-2">
+                    <span class="text-gray-600 dark:text-gray-400">@FormatFlags(rank.Flags)</span>
+                </TemplateColumn>
+                <TemplateColumn Title="Actions" Context="rank" class="px-4 py-2 whitespace-nowrap">
+                    <div class="flex justify-center">
+                        <NavLink href="@($"/permissions/ranks/{rank.Name}")" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 text-white rounded-md text-sm font-medium transition-colors">
+                            <i class="ri-edit-line"></i> Edit
+                        </NavLink>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+            <Pagination OnRefreshRequired="Refresh" State="@_pagination"/>
+        </div>
+    </div>
+</div>

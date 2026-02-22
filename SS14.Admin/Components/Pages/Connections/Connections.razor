@@ -4,44 +4,74 @@
 
 <PageTitle>Connections</PageTitle>
 
-<h1 class="text-2xl font-bold mb-4">Connection Logs</h1>
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                <i class="ri-links-fill text-blue-600 dark:text-blue-500"></i>
+                Connection Logs
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">View player connection history</p>
+        </div>
+    </div>
 
-<ConnectionFilter Filter="@_filter" FormName="ConnectionsPageFilterForm" OnSubmit="RefreshFilter" />
+    <!-- Filter Section -->
+    <div class="px-4 sm:px-6 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div class="p-3">
+                <ConnectionFilter Filter="@_filter" FormName="ConnectionsPageFilterForm" OnSubmit="RefreshFilter" />
+            </div>
+        </div>
+    </div>
 
-<QuickGrid
-    @ref="Grid"
-    ItemsProvider="@_connectionsProvider"
-    Pagination="@_pagination"
-    Class="grow">
+    <!-- Connections Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mx-4 sm:mx-6 mb-4">
+        <div class="overflow-x-auto">
+            <QuickGrid
+                @ref="Grid"
+                ItemsProvider="@_connectionsProvider"
+                Pagination="@_pagination"
+                Class="w-full text-sm">
 
-    <PropertyColumn Property="@(c => c.Time)" Title="Time" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" Format="yyyy-MM-dd HH:mm:ss" Class="text-primary-1 w-48"></PropertyColumn>
-    <PropertyColumn Property="@(c => c.UserName)" Title="Username" Sortable="true" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(c => c.UserId)" Title="User ID" Class="text-primary-1 font-mono text-sm"></PropertyColumn>
-    <PropertyColumn Property="@(c => RedactIp(c.Address))" Title="IP Address" Class="text-primary-1 font-mono text-sm"></PropertyColumn>
-    <PropertyColumn Property="@(c => RedactHwid(c.HWId))" Title="HWID" Class="text-primary-1 font-mono text-sm"></PropertyColumn>
-    <PropertyColumn Property="@(c => c.ServerName)" Title="Server" Sortable="true" Class="text-primary-1"></PropertyColumn>
-    <TemplateColumn Title="Status" SortBy="@(GridSort<ConnectionViewModel>.ByAscending(c => c.Denied))">
-        @if (context.Denied == null)
-        {
-            <span class="text-green-600 dark:text-green-400 font-bold">Accepted</span>
-        }
-        else
-        {
-            <span class="text-red-600 dark:text-red-400 font-bold">@context.Denied</span>
-        }
-    </TemplateColumn>
-    <TemplateColumn Title="Bans Hits" Class="text-primary-1">
-        @if (context.BanHitCount > 0)
-        {
-            <NavLink href="@($"/connections/{context.Id}/hits")" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
-                @context.BanHitCount
-            </NavLink>
-        }
-        else
-        {
-            <span class="text-gray-500">0</span>
-        }
-    </TemplateColumn>
-</QuickGrid>
-
-<Pagination OnRefreshRequired="Refresh" ShowPerPage="false" class="py-2 border-t sticky-pagination" State="@_pagination" />
+                <PropertyColumn Property="@(c => c.Time)" Title="Time" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" Format="yyyy-MM-dd HH:mm:ss" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(c => c.UserName)" Title="Username" Sortable="true" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(c => c.UserId)" Title="User ID" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap font-mono text-sm"></PropertyColumn>
+                <PropertyColumn Property="@(c => RedactIp(c.Address))" Title="IP Address" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap font-mono text-sm"></PropertyColumn>
+                <PropertyColumn Property="@(c => RedactHwid(c.HWId))" Title="HWID" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap font-mono text-sm"></PropertyColumn>
+                <PropertyColumn Property="@(c => c.ServerName)" Title="Server" Sortable="true" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <TemplateColumn Title="Status" SortBy="@(GridSort<ConnectionViewModel>.ByAscending(c => c.Denied))" class="px-4 py-2 whitespace-nowrap">
+                    @if (context.Denied == null)
+                    {
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                            <i class="ri-checkbox-circle-fill mr-1"></i> Accepted
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
+                            <i class="ri-close-circle-fill mr-1"></i> @context.Denied
+                        </span>
+                    }
+                </TemplateColumn>
+                <TemplateColumn Title="Ban Hits" class="px-4 py-2 whitespace-nowrap">
+                    <div class="flex justify-center">
+                    @if (context.BanHitCount > 0)
+                    {
+                        <NavLink href="@($"/connections/{context.Id}/hits")" class="inline-flex items-center gap-1 px-2 py-1 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 text-white rounded text-xs font-medium transition-colors">
+                            @context.BanHitCount
+                        </NavLink>
+                    }
+                    else
+                    {
+                        <span class="text-gray-400 dark:text-gray-500">0</span>
+                    }
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+            <Pagination OnRefreshRequired="Refresh" ShowPerPage="false" State="@_pagination"/>
+        </div>
+    </div>
+</div>

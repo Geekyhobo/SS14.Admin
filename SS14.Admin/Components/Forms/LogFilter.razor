@@ -1,13 +1,18 @@
 ﻿@using Content.Shared.Database
 
-<EditForm Model="@Filter" FormName="@FormName" OnSubmit="@Submit" class="flex gap-2 items-end">
+<EditForm Model="@Filter" FormName="@FormName" OnSubmit="@Submit" class="flex gap-4 items-end flex-wrap">
     <div class="flex flex-col gap-1">
-        <label for="filter-search">Search</label>
-        <InputText @bind-Value="Filter.Search" id="filter-search" />
+        <label for="filter-search" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Search</label>
+        <InputText @bind-Value="Filter.Search"
+                   id="filter-search"
+                   placeholder="Search logs..."
+                   class="w-48 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" />
     </div>
     <div class="flex flex-col gap-1">
-        <label for="filter-type">Type</label>
-        <InputSelect @bind-Value="Filter.Type" id="filter-type">
+        <label for="filter-type" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Type</label>
+        <InputSelect @bind-Value="Filter.Type"
+                     id="filter-type"
+                     class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100">
             <option selected="@(Filter.Type == null)" value="">All</option>
             @foreach (var type in Enum.GetValues(typeof(LogType)))
             {
@@ -16,8 +21,8 @@
         </InputSelect>
     </div>
     @*<div class="flex flex-col gap-1">
-        <label for="filter-impact">Impact</label>
-        <InputSelect @bind-Value="Filter.Impact" id="filter-impact" class="@Filter.Impact?.CssColorClass()">
+        <label for="filter-impact" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Impact</label>
+        <InputSelect @bind-Value="Filter.Impact" id="filter-impact" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100 @Filter.Impact?.CssColorClass()">
             <option selected="@(Filter.Impact == null)" value="" class="text-primary-1">All</option>
             @foreach (var impact in Enum.GetValues(typeof(LogImpact)))
             {
@@ -28,15 +33,19 @@
         </InputSelect>
     </div>*@
     <div class="flex flex-col gap-1">
-        <label for="filter-round-id">Round Id</label>
-        <InputNumber @bind-Value="Filter.RoundId" id="filter-round-id" />
+        <label for="filter-round-id" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Round Id</label>
+        <InputNumber @bind-Value="Filter.RoundId"
+                     id="filter-round-id"
+                     class="w-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" />
     </div>
     <div class="flex flex-col gap-1">
-        <label>Date</label>
+        <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Date</label>
         <DatePicker></DatePicker>
     </div>
     <div class="grow"></div>
-    <button type="submit" class="h-9 px-6 py-1 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 rounded-md">Search</button>
+    <button type="submit" class="h-10 px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-800 text-white rounded-lg font-medium shadow-md transition-all duration-200">
+        <i class="ri-search-line mr-2"></i>Search
+    </button>
 </EditForm>
 
 @code

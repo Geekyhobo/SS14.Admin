@@ -536,6 +536,58 @@ data-grid-footer {
     transform: translateY(0);
 }
 
+/* Unified Button Styles - Fix for rounded buttons */
+.btn,
+button,
+a.btn,
+.nav-link.btn,
+.inline-flex.items-center.px-3,
+.inline-flex.items-center.px-4,
+.rounded-md,
+.rounded-lg {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after,
+button::after,
+.inline-flex.items-center.px-3::after,
+.inline-flex.items-center.px-4::after,
+.rounded-md::after,
+.rounded-lg::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    transition: background 0.2s ease-in-out;
+    border-radius: 0 0 var(--button-radius, 0.375rem) var(--button-radius, 0.375rem);
+}
+
+/* Ensure button hover states work properly */
+button:hover,
+.btn:hover,
+a.btn:hover,
+.inline-flex.items-center:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+button:active,
+.btn:active,
+a.btn:active,
+.inline-flex.items-center:active {
+    transform: translateY(0);
+}
+
+/* Fix for QuickGrid action buttons - no underline on hover */
+.quickgrid a:hover,
+.quickgrid button:hover {
+    text-decoration: none;
+}
+
 .entity-link {
     text-decoration-line: none;
     font-weight: bold;

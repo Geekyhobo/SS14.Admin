@@ -42,6 +42,11 @@ public partial class RoleBans : IDisposable
     // Tracks confirmation state for each ban.
     private Dictionary<int, bool> _confirmations = new();
 
+    // Column visibility toggles
+    private bool _showIpColumn = true;
+    private bool _showHwidColumn = true;
+    private bool _showGuidColumn = true;
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthStateProvider!.GetAuthenticationStateAsync();

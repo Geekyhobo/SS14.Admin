@@ -5,39 +5,87 @@
     <Shortcut Code="ArrowRight" Action="OnShortcutRight" />
 </ShortcutHandler>
 
-<div class="@Class flex w-full gap-2 bg-primary-1 font-light">
+<div class="@Class flex w-full items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
     @if (State.TotalItemCount.HasValue)
     {
-        <div>
+        <div class="flex-shrink-0">
             @if (ShowPerPage)
             {
-                <p><strong>@State.TotalItemCount</strong> items</p>
+                <p class="font-semibold text-gray-700 dark:text-gray-300"><span class="text-gray-900 dark:text-gray-100">@State.TotalItemCount</span> items</p>
             }
         </div>
         <div class="flex-grow"></div>
-        <nav role="navigation" class="flex">
+        <nav role="navigation" class="flex items-center gap-1">
             @if (ShowPerPage)
             {
-                <button class="go-first text-primary-1" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="Go to first page" aria-label="Go to first page"><i class="ri-skip-left-line"></i></button>
-                <button class="go-previous text-primary-1" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-label="Go to previous page"><i class="ri-arrow-left-s-line"></i></button>
-                <div class="pagination-text text-primary-1 self-center">
-                    Page <strong>@(State.CurrentPageIndex + 1)</strong>
-                    of <strong>@(State.LastPageIndex + 1)</strong>
+                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        type="button"
+                        @onclick="GoFirstAsync"
+                        disabled="@(!CanGoBack)"
+                        title="Go to first page"
+                        aria-label="Go to first page">
+                    <i class="ri-skip-left-line text-lg"></i>
+                </button>
+                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        type="button"
+                        @onclick="GoPreviousAsync"
+                        disabled="@(!CanGoBack)"
+                        title="Go to previous page"
+                        aria-label="Go to previous page">
+                    <i class="ri-arrow-left-s-line text-lg"></i>
+                </button>
+                <div class="px-3 py-1.5 text-gray-700 dark:text-gray-300 font-medium">
+                    Page <strong class="text-gray-900 dark:text-gray-100">@(State.CurrentPageIndex + 1)</strong>
+                    of <strong class="text-gray-900 dark:text-gray-100">@(State.LastPageIndex + 1)</strong>
                 </div>
-                <button class="go-next text-primary-1" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="Go to next page" aria-label="Go to next page"><i class="ri-arrow-right-s-line"></i></button>
-                <button class="go-last text-primary-1" type="button" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="Go to last page" aria-label="Go to last page"><i class="ri-skip-right-line"></i></button>
+                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        type="button"
+                        @onclick="GoNextAsync"
+                        disabled="@(!CanGoForwards)"
+                        title="Go to next page"
+                        aria-label="Go to next page">
+                    <i class="ri-arrow-right-s-line text-lg"></i>
+                </button>
+                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        type="button"
+                        @onclick="GoLastAsync"
+                        disabled="@(!CanGoForwards)"
+                        title="Go to last page"
+                        aria-label="Go to last page">
+                    <i class="ri-skip-right-line text-lg"></i>
+                </button>
             }
             else
             {
-                <button class="go-previous text-primary-1" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-label="Go to previous page"><i class="ri-arrow-left-s-line"></i></button>
-                <button class="go-next text-primary-1" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="Go to next page" aria-label="Go to next page"><i class="ri-arrow-right-s-line"></i></button>
+                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        type="button"
+                        @onclick="GoPreviousAsync"
+                        disabled="@(!CanGoBack)"
+                        title="Go to previous page"
+                        aria-label="Go to previous page">
+                    <i class="ri-arrow-left-s-line text-lg"></i>
+                </button>
+                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        type="button"
+                        @onclick="GoNextAsync"
+                        disabled="@(!CanGoForwards)"
+                        title="Go to next page"
+                        aria-label="Go to next page">
+                    <i class="ri-arrow-right-s-line text-lg"></i>
+                </button>
             }
         </nav>
-        <div class="text-primary-1">
-            <span>Per page:</span>
-            <InputNumber @bind-Value="@State.ItemsPerPage" class="w-14 bg-secondary-1"></InputNumber>
+        <div class="flex items-center gap-2 flex-shrink-0">
+            <label class="font-semibold text-gray-700 dark:text-gray-300">Per page:</label>
+            <InputNumber @bind-Value="@State.ItemsPerPage"
+                         class="w-16 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100">
+            </InputNumber>
         </div>
-        <button @onclick="Refresh" ><i class="ri-refresh-line text-primary-1"></i></button>
+        <button @onclick="Refresh"
+                class="h-10 px-4 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-800 text-white rounded-lg font-medium shadow-md transition-all duration-200 flex items-center gap-2"
+                title="Refresh">
+            <i class="ri-refresh-line"></i>
+        </button>
     }
 </div>
 

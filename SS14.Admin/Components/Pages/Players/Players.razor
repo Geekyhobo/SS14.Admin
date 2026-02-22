@@ -4,25 +4,52 @@
 
 <PageTitle>Players</PageTitle>
 
-<h1 class="text-2xl font-bold mb-4">Players</h1>
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                <i class="ri-team-fill text-purple-600 dark:text-purple-500"></i>
+                Players
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">View all registered players</p>
+        </div>
+    </div>
 
-<PlayerFilter Filter="_model" FormName="playerFilter" OnSubmit="@OnFilterSubmit" />
+    <!-- Filter Section -->
+    <div class="px-4 sm:px-6 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div class="p-3">
+                <PlayerFilter Filter="_model" FormName="playerFilter" OnSubmit="@OnFilterSubmit" />
+            </div>
+        </div>
+    </div>
 
-<QuickGrid TItem="PlayerViewModel"
-           @ref="Grid"
-           Items="@_playersList.AsQueryable()"
-           Pagination="@_pagination"
-           Class="grow">
-    <PropertyColumn Property="@(player => player.LastSeenUsername)" Title="Last Name" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(player => player.Guid)" Title="User ID" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(player => player.LastSeen)" Title="Last Seen Time" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(player => RedactIp(player.LastSeenIPAddress))" Title="Last Seen Address" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(player => RedactHwid(player.LastSeenHwid))" Title="Last Seen Hwid" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(player => player.FirstSeen)" Title="First Seen" Class="text-primary-1"></PropertyColumn>
-    <TemplateColumn Title="Actions" Context="player" Class="text-primary-1">
-        <NavLink href="@($"players/{player.Guid.ToString()}")" class="btn">
-                    <i class="ri-info-card-line"> Player Info</i>
-                </NavLink>
-    </TemplateColumn>
-</QuickGrid>
-<Pagination OnRefreshRequired="Refresh" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>
+    <!-- Players Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mx-4 sm:mx-6 mb-4">
+        <div class="overflow-x-auto">
+            <QuickGrid TItem="PlayerViewModel"
+                       @ref="Grid"
+                       Items="@_playersList.AsQueryable()"
+                       Pagination="@_pagination"
+                       Class="w-full text-sm">
+                <PropertyColumn Property="@(player => player.LastSeenUsername)" Title="Last Name" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(player => player.Guid)" Title="User ID" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap font-mono text-sm"></PropertyColumn>
+                <PropertyColumn Property="@(player => player.LastSeen)" Title="Last Seen Time" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(player => RedactIp(player.LastSeenIPAddress))" Title="Last Seen Address" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap font-mono text-sm"></PropertyColumn>
+                <PropertyColumn Property="@(player => RedactHwid(player.LastSeenHwid))" Title="Last Seen HWID" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap font-mono text-sm"></PropertyColumn>
+                <PropertyColumn Property="@(player => player.FirstSeen)" Title="First Seen" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <TemplateColumn Title="Actions" Context="player" class="px-4 py-2 whitespace-nowrap">
+                    <div class="flex justify-center">
+                        <NavLink href="@($"players/{player.Guid.ToString()}")" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 text-white rounded-md text-sm font-medium transition-colors">
+                            <i class="ri-eye-line"></i> View
+                        </NavLink>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+            <Pagination OnRefreshRequired="Refresh" State="@_pagination"/>
+        </div>
+    </div>
+</div>

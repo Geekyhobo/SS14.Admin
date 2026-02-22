@@ -6,31 +6,55 @@
 
 <PageTitle>Admin Permissions</PageTitle>
 
-<div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Manage Permissions</h1>
-    <NavLink href="/permissions/add" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors">
-        + Add Admin
-    </NavLink>
-</div>
-
-<AdminFilter Filter="@_filter" FormName="AdminPermissionsPageFilterForm" OnSubmit="RefreshFilter" />
-
-<QuickGrid
-           @ref="Grid"
-           ItemsProvider="@_adminProvider"
-           Pagination="@_pagination"
-           Class="grow">
-    <PropertyColumn Property="@(admin => admin.Username)" Title="Username" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(admin => admin.Title)" Title="Title" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(admin => admin.Rank)" Title="Rank" Class="text-primary-1"></PropertyColumn>
-    <TemplateColumn Title="Flags" Context="admin">
-        @FormatFlags(admin.Flags)
-    </TemplateColumn>
-    <TemplateColumn Title="Edit Permissions" Context="admin">
-        <NavLink href="@($"/permissions/{admin.UserId}")" class="btn btn-primary">
-            Edit
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                <i class="ri-shield-keyhole-fill text-purple-600 dark:text-purple-500"></i>
+                Manage Permissions
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">Manage admin permissions and flags</p>
+        </div>
+        <NavLink href="/permissions/add" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors">
+            <i class="fas fa-plus"></i> Add Admin
         </NavLink>
-    </TemplateColumn>
-</QuickGrid>
+    </div>
 
-<Pagination OnRefreshRequired="Refresh" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>
+    <!-- Filter Section -->
+    <div class="px-4 sm:px-6 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div class="p-3">
+                <AdminFilter Filter="@_filter" FormName="AdminPermissionsPageFilterForm" OnSubmit="RefreshFilter" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Permissions Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mx-4 sm:mx-6 mb-4">
+        <div class="overflow-x-auto">
+            <QuickGrid
+                   @ref="Grid"
+                   ItemsProvider="@_adminProvider"
+                   Pagination="@_pagination"
+                   Class="w-full text-sm">
+                <PropertyColumn Property="@(admin => admin.Username)" Title="Username" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(admin => admin.Title)" Title="Title" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(admin => admin.Rank)" Title="Rank" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <TemplateColumn Title="Flags" Context="admin" class="px-4 py-2">
+                    <span class="text-gray-600 dark:text-gray-400">@FormatFlags(admin.Flags)</span>
+                </TemplateColumn>
+                <TemplateColumn Title="Actions" Context="admin" class="px-4 py-2 whitespace-nowrap">
+                    <div class="flex justify-center">
+                        <NavLink href="@($"/permissions/{admin.UserId}")" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 text-white rounded-md text-sm font-medium transition-colors">
+                            <i class="ri-edit-line"></i> Edit
+                        </NavLink>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+            <Pagination OnRefreshRequired="Refresh" State="@_pagination"/>
+        </div>
+    </div>
+</div>

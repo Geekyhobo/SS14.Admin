@@ -4,67 +4,92 @@
 
 <PageTitle>Whitelist</PageTitle>
 
-<h1 class="text-2xl font-bold mb-4">Whitelist Management</h1>
-
-<WhitelistFilter Filter="_filterModel" FormName="WhitelistFilter" OnSubmit="OnFilterSubmit" />
-
-<div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-    <h2 class="text-xl font-semibold mb-3">Add Player to Whitelist</h2>
-    <div class="flex gap-2">
-        <input
-            type="text"
-            @bind="NewGuid"
-            @bind:event="oninput"
-            placeholder="Enter GUID"
-            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        />
-        <button
-            @onclick="AddWhitelistAsync"
-            disabled="@(!IsValidGuid || IsProcessing)"
-            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
-            @if (IsProcessing)
-            {
-                <span>Adding...</span>
-            }
-            else
-            {
-                <span>Add</span>
-            }
-        </button>
-    </div>
-    @if (!string.IsNullOrEmpty(Message))
-    {
-        <div class="mt-2 p-2 rounded @(IsError ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200")">
-            @Message
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                <i class="ri-shield-check-fill text-green-600 dark:text-green-500"></i>
+                Whitelist Management
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">Manage player whitelist</p>
         </div>
-    }
-</div>
+    </div>
 
-<!-- Whitelist Quick Grid -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-    <QuickGrid TItem="WhitelistViewModel"
-               @ref="Grid"
-               Items="@_whitelistQuery"
-               Pagination="@_pagination"
-               Class="w-full">
-        <PropertyColumn Property="@(w => w.UserId)" Title="User ID" Sortable="true" Class="text-primary-1" />
-        <PropertyColumn Property="@(w => w.LastSeenUsername)" Title="Last Known Username" Sortable="true" Class="text-primary-1" />
-        <PropertyColumn Property="@(w => w.LastSeenTime)" Title="Last Seen" Sortable="true" Format="yyyy-MM-dd HH:mm:ss" Class="text-primary-1" />
-        <TemplateColumn Class="text-primary-1" Context="whitelist">
+    <!-- Filter Section -->
+    <div class="px-4 sm:px-6 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div class="p-3">
+                <WhitelistFilter Filter="_filterModel" FormName="WhitelistFilter" OnSubmit="OnFilterSubmit" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Player Section -->
+    <div class="px-4 sm:px-6 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">Add Player to Whitelist</h2>
             <div class="flex gap-2">
-                <NavLink href="@($"players/{whitelist.UserId}")" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                    View Player
-                </NavLink>
+                <input
+                    type="text"
+                    @bind="NewGuid"
+                    @bind:event="oninput"
+                    placeholder="Enter GUID"
+                    class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                />
                 <button
-                    @onclick="@(() => RemoveWhitelistAsync(whitelist.UserId))"
-                    disabled="@IsProcessing"
-                    class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
-                    Remove
+                    @onclick="AddWhitelistAsync"
+                    disabled="@(!IsValidGuid || IsProcessing)"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+                    @if (IsProcessing)
+                    {
+                        <span>Adding...</span>
+                    }
+                    else
+                    {
+                        <span><i class="fas fa-plus mr-1"></i> Add</span>
+                    }
                 </button>
             </div>
-        </TemplateColumn>
-    </QuickGrid>
-    <Pagination OnRefreshRequired="RefreshAsync" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="mt-2 p-2 rounded @(IsError ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200")">
+                    @Message
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Whitelist Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mx-4 sm:mx-6 mb-4">
+        <div class="overflow-x-auto">
+            <QuickGrid TItem="WhitelistViewModel"
+                       @ref="Grid"
+                       Items="@_whitelistQuery"
+                       Pagination="@_pagination"
+                       Class="w-full text-sm">
+                <PropertyColumn Property="@(w => w.UserId)" Title="User ID" Sortable="true" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap font-mono" />
+                <PropertyColumn Property="@(w => w.LastSeenUsername)" Title="Last Known Username" Sortable="true" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap" />
+                <PropertyColumn Property="@(w => w.LastSeenTime)" Title="Last Seen" Sortable="true" Format="yyyy-MM-dd HH:mm:ss" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap" />
+                <TemplateColumn Title="Actions" Class="px-4 py-2 whitespace-nowrap" Context="whitelist">
+                    <div class="flex justify-center gap-2">
+                        <NavLink href="@($"players/{whitelist.UserId}")" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 text-white rounded-md text-sm font-medium transition-colors">
+                            <i class="ri-eye-line"></i> View
+                        </NavLink>
+                        <button
+                            @onclick="@(() => RemoveWhitelistAsync(whitelist.UserId))"
+                            disabled="@IsProcessing"
+                            class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+                            <i class="ri-delete-bin-line"></i> Remove
+                        </button>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+            <Pagination OnRefreshRequired="RefreshAsync" State="@_pagination"/>
+        </div>
+    </div>
 </div>
 
 <ConfirmDialog

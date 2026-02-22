@@ -6,32 +6,50 @@
 
 
 <PageTitle>Logs</PageTitle>
-@*Remove ability to filter and sort by impact*@
-<LogFilter Filter="@_filter" FormName="LogsPageFilterForm" OnSubmit="RefreshFilter" />
 
-<QuickGrid
-    @ref="Grid"
-    ItemsProvider="@_logsProvider"
-    Pagination="@_pagination"
-    Class="grow">
-
-    <PropertyColumn Property="@(log => log.RoundId)" Title="Round" Class="text-primary-1"></PropertyColumn>
-    @* ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract *@
-    <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server" Class="text-primary-1"></PropertyColumn>
-    @*<PropertyColumn Property="@(log => log.Impact)" Title="Impact" Sortable="true" Class="text-primary-1"></PropertyColumn>*@
-    <TemplateColumn Title="Impact" SortBy="@(GridSort<AdminLog>.ByAscending(log => log.Impact))">
-        <span class="@context.Impact.CssColorClass() font-bold">@context.Impact</span>
-    </TemplateColumn>
-    <PropertyColumn Property="@(log => log.Date)" Title="Date" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" Class="text-primary-1 w-48"></PropertyColumn>
-    <PropertyColumn Property="@(log => log.Type)" Title="Type" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(log => log.Message)" Title="Message" Class="text-primary-1"></PropertyColumn>
-</QuickGrid>
-
-@*@if (!Grid?.Items?.Any() ?? true)
-{
-    <div class="grow-[100] flex justify-center items-center">
-        <p>No logs found.</p>
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                <i class="ri-file-list-3-fill text-yellow-600 dark:text-yellow-500"></i>
+                Admin Logs
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">View administration logs</p>
+        </div>
     </div>
-}*@
 
-<Pagination OnRefreshRequired="Refresh" ShowPerPage="false" class="py-2 border-t sticky-pagination" State="@_pagination" />
+    <!-- Filter Section -->
+    <div class="px-4 sm:px-6 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div class="p-3">
+                <LogFilter Filter="@_filter" FormName="LogsPageFilterForm" OnSubmit="RefreshFilter" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mx-4 sm:mx-6 mb-4">
+        <div class="overflow-x-auto">
+            <QuickGrid
+                @ref="Grid"
+                ItemsProvider="@_logsProvider"
+                Pagination="@_pagination"
+                Class="w-full text-sm">
+
+                <PropertyColumn Property="@(log => log.RoundId)" Title="Round" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                @* ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract *@
+                <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <TemplateColumn Title="Impact" SortBy="@(GridSort<AdminLog>.ByAscending(log => log.Impact))" class="px-4 py-2 whitespace-nowrap">
+                    <span class="@context.Impact.CssColorClass() font-bold">@context.Impact</span>
+                </TemplateColumn>
+                <PropertyColumn Property="@(log => log.Date)" Title="Date" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(log => log.Type)" Title="Type" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(log => log.Message)" Title="Message" class="text-gray-600 dark:text-gray-400 px-4 py-2 max-w-xs truncate"></PropertyColumn>
+            </QuickGrid>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+            <Pagination OnRefreshRequired="Refresh" ShowPerPage="false" State="@_pagination" />
+        </div>
+    </div>
+</div>
