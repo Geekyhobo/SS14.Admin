@@ -17,14 +17,6 @@
             <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">Manage player bans</p>
         </div>
         <div class="flex gap-3">
-            <AuthorizeView Roles="@AdminFlags.MassBan.RoleName()">
-                <Authorized>
-                    <NavLink href="/bans/createmassban"
-                             class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-medium shadow-md transition-all duration-200 text-sm">
-                        Mass Ban
-                    </NavLink>
-                </Authorized>
-            </AuthorizeView>
             <AuthorizeView Roles="@AdminFlags.Ban.RoleName()">
                 <Authorized>
                     <NavLink href="/bans/createban"
