@@ -1,4 +1,5 @@
-﻿@using Content.Shared.Database
+﻿@using Content.Server.Database
+@using Content.Shared.Database
 
 <EditForm Model="@Filter" FormName="@FormName" OnSubmit="@Submit" class="flex gap-4 items-end flex-wrap">
     <div class="flex flex-col gap-1">
@@ -20,27 +21,46 @@
             }
         </InputSelect>
     </div>
-    @*<div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-1">
         <label for="filter-impact" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Impact</label>
-        <InputSelect @bind-Value="Filter.Impact" id="filter-impact" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100 @Filter.Impact?.CssColorClass()">
-            <option selected="@(Filter.Impact == null)" value="" class="text-primary-1">All</option>
+        <InputSelect @bind-Value="Filter.Impact"
+                     id="filter-impact"
+                     class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100">
+            <option selected="@(Filter.Impact == null)" value="">All</option>
             @foreach (var impact in Enum.GetValues(typeof(LogImpact)))
             {
-                <option selected="@(impact.Equals(Filter.Impact))" value="@impact" class="@(((LogImpact)impact).CssColorClass())">
-                    @impact
-                </option>
+                <option selected="@(impact.Equals(Filter.Impact))" value="@impact">@impact</option>
             }
         </InputSelect>
-    </div>*@
+    </div>
     <div class="flex flex-col gap-1">
         <label for="filter-round-id" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Round Id</label>
         <InputNumber @bind-Value="Filter.RoundId"
                      id="filter-round-id"
-                     class="w-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" />
+                     class="w-28 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" />
     </div>
     <div class="flex flex-col gap-1">
-        <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Date</label>
-        <DatePicker></DatePicker>
+        <label for="filter-server" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Server</label>
+        <InputSelect @bind-Value="Filter.ServerId"
+                     id="filter-server"
+                     class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100">
+            <option selected="@(Filter.ServerId == null)" value="">All</option>
+            @foreach (var server in Servers)
+            {
+                <option value="@server.Id">@server.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="flex flex-col gap-1">
+        <label for="filter-player" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Player</label>
+        <InputText @bind-Value="Filter.PlayerName"
+                   id="filter-player"
+                   placeholder="Username"
+                   class="w-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" />
+    </div>
+    <div class="flex flex-col gap-1">
+        <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Date Range</label>
+        <DatePicker @bind-DateFrom="Filter.DateFrom" @bind-DateTo="Filter.DateTo" />
     </div>
     <div class="grow"></div>
     <button type="submit" class="h-10 px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-800 text-white rounded-lg font-medium shadow-md transition-all duration-200">
@@ -51,6 +71,7 @@
 @code
 {
     [Parameter] public LogsFilterModel Filter { get; set; } = null!;
+    [Parameter] public List<Server> Servers { get; set; } = new();
     [Parameter] public string FormName { get; set; } = null!;
     [Parameter] public EventCallback<EditContext> OnSubmit { get; set; } = EventCallback<EditContext>.Empty;
 

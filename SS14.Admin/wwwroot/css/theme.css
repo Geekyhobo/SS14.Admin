@@ -253,7 +253,7 @@
         border-color: var(--ss14-red);
     }
 
-    /* Severity Colors */
+    /* Severity Colors - Text */
     .text-impact-severity-low {
         color: var(--color-severity-low);
     }
@@ -268,6 +268,39 @@
 
     .text-impact-severity-extreme {
         color: var(--color-severity-extreme);
+    }
+
+    /* Severity Colors - Background */
+    .bg-impact-severity-low {
+        background-color: #D1D5DB;
+    }
+
+    .dark .bg-impact-severity-low {
+        background-color: #6B7280;
+    }
+
+    .bg-impact-severity-medium {
+        background-color: #FDE047;
+    }
+
+    .dark .bg-impact-severity-medium {
+        background-color: #CA8A04;
+    }
+
+    .bg-impact-severity-high {
+        background-color: #FB923C;
+    }
+
+    .dark .bg-impact-severity-high {
+        background-color: #EA580C;
+    }
+
+    .bg-impact-severity-extreme {
+        background-color: #F87171;
+    }
+
+    .dark .bg-impact-severity-extreme {
+        background-color: #DC2626;
     }
 
     /* Status Colors */

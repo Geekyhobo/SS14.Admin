@@ -76,28 +76,13 @@
         <tbody id="table-body">
         @foreach (var entry in Model.Items)
         {
-            <tr class="on-click data-log">
+            <tr class="on-click data-log" data-round-id="@entry.RoundId" data-log-id="@entry.Id">
                 <td>@entry.RoundId</td>
                 <td>@entry.Round?.Server?.Name</td>
                 <td class="text-center colored" style="--cell-color: var(@entry.Impact.CssColorClass())">@entry.Impact.ToString()</td>
                 <td>@entry.Date</td>
                 <td>@entry.Type</td>
                 <td>@entry.Message</td>
-                <template>
-                    <div class="log-details-header flex-row" style="--cell-color: var(@entry.Impact.CssColorClass())">
-                        <h2>Details</h2>
-                        <span class="details-close fa fa-times" onclick="onDetailsClose()"></span>
-                    </div>
-                    <div class="log-details-sub log-muted">
-                        <p>Server: <a href="#">@entry.Round?.Server?.Name</a></p>
-                        <p>Round: <a href="#">@entry.RoundId</a></p>
-                    </div>
-                    <h3>Message:</h3>
-                    <p>@entry.Message</p>
-                    <hr class="line-inset">
-                    <h4>Data:</h4>
-                    <log-json json="entry.Json"></log-json>
-                </template>
             </tr>
         }
         </tbody>

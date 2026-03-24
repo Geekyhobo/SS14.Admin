@@ -15,4 +15,9 @@
     {
         @apply border-b border-neutral-200 dark:border-neutral-700;
     }
+
+    .quickgrid[theme="default"] > tbody > tr:hover
+    {
+        @apply bg-neutral-100 dark:bg-neutral-800;
+    }
 }

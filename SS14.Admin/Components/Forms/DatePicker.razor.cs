@@ -9,9 +9,12 @@ public partial class DatePicker : ComponentBase, IAsyncDisposable
     private IJSObjectReference? _instance;
 
     [Parameter] public string? Label { get; set; }
-    [Parameter] public string? Value { get; set; }
-    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
 
+    [Parameter] public DateTime? DateFrom { get; set; }
+    [Parameter] public EventCallback<DateTime?> DateFromChanged { get; set; }
+
+    [Parameter] public DateTime? DateTo { get; set; }
+    [Parameter] public EventCallback<DateTime?> DateToChanged { get; set; }
 
     private readonly string _id = $"date-picker-{Guid.NewGuid().ToString()}";
 
@@ -29,13 +32,33 @@ public partial class DatePicker : ComponentBase, IAsyncDisposable
 
         var options = new
         {
-            rangeStart = DateTime.Now,
+            rangeStart = DateFrom?.ToString("yyyy-MM-dd"),
+            rangeEnd = DateTo?.ToString("yyyy-MM-dd"),
         };
 
         _instance = await module.InvokeAsync<IJSObjectReference>("DatePicker.init", DotNetObjectReference.Create(this), _id, options);
         await module.DisposeAsync();
     }
 
+    [JSInvokable]
+    public async Task OnDatesConfirmed(string? fromDate, string? toDate)
+    {
+        // Npgsql requires Utc
+        DateFrom = ParseAsUtc(fromDate);
+        DateTo = ParseAsUtc(toDate);
+
+        await DateFromChanged.InvokeAsync(DateFrom);
+        await DateToChanged.InvokeAsync(DateTo);
+    }
+
+    private static DateTime? ParseAsUtc(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return null;
+
+        var dt = DateTime.Parse(value);
+        return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+    }
 
     public async ValueTask DisposeAsync()
     {
@@ -51,4 +74,3 @@ public partial class DatePicker : ComponentBase, IAsyncDisposable
         }
     }
 }
-

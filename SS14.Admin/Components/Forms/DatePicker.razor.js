@@ -1,6 +1,4 @@
-﻿//import dayjs from "../../wwwroot/lib/dayjs";
-
-export class DatePicker {
+﻿export class DatePicker {
     static init(ref, id, options)
     {
         return new DatePicker(ref, id, options);
@@ -13,9 +11,9 @@ export class DatePicker {
         this.root = document.getElementById(id);
         this.currentMonthButton = this.root.querySelector('.current-month');
         this.daysContainer = this.root.querySelector('.days-container');
-        this.daysContainer.addEventListener('click', e => console.log(e));
         this.popup = this.root.querySelector('.datepicker-container');
         this.popupButton = this.root.querySelector('.datepicker-toggle');
+        this.displayInput = this.root.querySelector('.date-display');
 
         this.popupButton.addEventListener('click', () =>
         {
@@ -30,7 +28,8 @@ export class DatePicker {
         });
 
         this.root.querySelector('.cancel-button').addEventListener('click', () => this.hidePopup());
-        this.root.querySelector('.ok-button').addEventListener('click', () => this.hidePopup());
+        this.root.querySelector('.ok-button').addEventListener('click', () => this.confirmDates());
+        this.root.querySelector('.clear-button').addEventListener('click', () => this.clearDates());
         this.root.querySelector('.prev').addEventListener('click', () => this.prevMonth());
         this.root.querySelector('.next').addEventListener('click', () => this.nextMonth());
 
@@ -42,6 +41,8 @@ export class DatePicker {
         this.toDateInput.addEventListener('change', () => this.setToDate());
         this.toTimeInput = this.root.querySelector('.to-time-input');
         this.toTimeInput.addEventListener('change', () => this.setToDate());
+
+        this.daysContainer.addEventListener('click', (e) => this.onDayClick(e));
 
         this.updatePosition();
 
@@ -55,8 +56,104 @@ export class DatePicker {
         this.rangeStart = options.rangeStart != null ? dayjs(options.rangeStart) : null;
         this.rangeEnd = options.rangeEnd != null ? dayjs(options.rangeEnd) : null;
 
-        this.currentDisplayDate = this.rangeStart != null ? this.rangeStart : dayjs();
+        // Set input values from initial state
+        if (this.rangeStart && !this.isNanOrNull(this.rangeStart)) {
+            this.fromDateInput.value = this.rangeStart.format('YYYY-MM-DD');
+        }
+        if (this.rangeEnd && !this.isNanOrNull(this.rangeEnd)) {
+            this.toDateInput.value = this.rangeEnd.format('YYYY-MM-DD');
+        }
+
+        this.currentDisplayDate = this.rangeStart != null && !this.isNanOrNull(this.rangeStart) ? this.rangeStart : dayjs();
         this.updateDisplay();
+        this.updateDisplayInput();
+    }
+
+    onDayClick(e)
+    {
+        const dayEl = e.target.closest('.day');
+        if (!dayEl) return;
+
+        const dateStr = dayEl.dataset.day;
+        if (!dateStr) return;
+
+        const clicked = dayjs(dateStr);
+
+        // If no start selected, or both are selected, start fresh
+        if (this.isNanOrNull(this.rangeStart) || (!this.isNanOrNull(this.rangeStart) && !this.isNanOrNull(this.rangeEnd))) {
+            this.rangeStart = clicked;
+            this.rangeEnd = null;
+            this.fromDateInput.value = clicked.format('YYYY-MM-DD');
+            this.toDateInput.value = '';
+        }
+        // If start is selected but not end
+        else {
+            if (clicked.isBefore(this.rangeStart, 'day')) {
+                // Clicked before start — swap
+                this.rangeEnd = this.rangeStart;
+                this.rangeStart = clicked;
+                this.fromDateInput.value = clicked.format('YYYY-MM-DD');
+                this.toDateInput.value = this.rangeEnd.format('YYYY-MM-DD');
+            } else {
+                this.rangeEnd = clicked;
+                this.toDateInput.value = clicked.format('YYYY-MM-DD');
+            }
+        }
+
+        this.updateDisplay();
+    }
+
+    confirmDates()
+    {
+        let fromDateTime = null;
+        let toDateTime = null;
+
+        if (!this.isNanOrNull(this.rangeStart)) {
+            const fromTime = this.fromTimeInput.value;
+            fromDateTime = this.rangeStart.format('YYYY-MM-DD');
+            if (fromTime) {
+                fromDateTime += 'T' + fromTime;
+            }
+        }
+
+        if (!this.isNanOrNull(this.rangeEnd)) {
+            const toTime = this.toTimeInput.value;
+            toDateTime = this.rangeEnd.format('YYYY-MM-DD');
+            if (toTime) {
+                toDateTime += 'T' + toTime;
+            }
+        }
+
+        this.ref.invokeMethodAsync('OnDatesConfirmed', fromDateTime, toDateTime);
+        this.updateDisplayInput();
+        this.hidePopup();
+    }
+
+    clearDates()
+    {
+        this.rangeStart = null;
+        this.rangeEnd = null;
+        this.fromDateInput.value = '';
+        this.fromTimeInput.value = '';
+        this.toDateInput.value = '';
+        this.toTimeInput.value = '';
+        this.ref.invokeMethodAsync('OnDatesConfirmed', null, null);
+        this.updateDisplay();
+        this.updateDisplayInput();
+        this.hidePopup();
+    }
+
+    updateDisplayInput()
+    {
+        if (!this.displayInput) return;
+
+        if (!this.isNanOrNull(this.rangeStart) && !this.isNanOrNull(this.rangeEnd)) {
+            this.displayInput.value = this.rangeStart.format('YYYY-MM-DD') + '  —  ' + this.rangeEnd.format('YYYY-MM-DD');
+        } else if (!this.isNanOrNull(this.rangeStart)) {
+            this.displayInput.value = this.rangeStart.format('YYYY-MM-DD') + '  —  ...';
+        } else {
+            this.displayInput.value = '';
+        }
     }
 
     showPopup()
@@ -90,20 +187,26 @@ export class DatePicker {
             });
         });
     }
+
     updateDisplay()
     {
         this.daysContainer.innerHTML = "";
         this.currentMonthButton.textContent = this.currentDisplayDate.toDate().toLocaleString('en-us', {month: 'long', year: 'numeric'});
-        let numberOfDays =  DatePicker.getDaysInMonth(this.currentDisplayDate.toDate());
+        let numberOfDays = DatePicker.getDaysInMonth(this.currentDisplayDate.toDate());
 
         for (let i = 0; i < numberOfDays; i++)
         {
-            // (╯°□°)╯︵ ┻━┻
             const day = this.currentDisplayDate.date(i + 1);
-            const isSelected = (!this.isNanOrNull(this.rangeStart) &&  day.isSameOrAfter(this.rangeStart, 'day'))
+            const isSelected = (!this.isNanOrNull(this.rangeStart) && day.isSameOrAfter(this.rangeStart, 'day'))
                                     && (!this.isNanOrNull(this.rangeEnd) && day.isSameOrBefore(this.rangeEnd, 'day'));
+            const isStart = !this.isNanOrNull(this.rangeStart) && day.isSame(this.rangeStart, 'day');
+            const isEnd = !this.isNanOrNull(this.rangeEnd) && day.isSame(this.rangeEnd, 'day');
 
-            this.daysContainer.innerHTML += `<div data-day="${day.format('YYYY-MM-DD')}" class="day ${isSelected ? 'day-selected' : ''} w-6 h-6 day-text-nudge text-center text-sm cursor-pointer">${i + 1}</div>`;
+            let classes = 'day w-6 h-6 day-text-nudge text-center text-sm cursor-pointer rounded';
+            if (isSelected) classes += ' day-selected';
+            else if (isStart || isEnd) classes += ' day-selected';
+
+            this.daysContainer.innerHTML += `<div data-day="${day.format('YYYY-MM-DD')}" class="${classes}">${i + 1}</div>`;
         }
     }
 
@@ -146,9 +249,6 @@ export class DatePicker {
         this.updateDisplay();
     }
 
-    /**
-     * I don't fucking care anymore
-     */
     isNanOrNull(date)
     {
         return date == null || isNaN(date.unix())

@@ -41,6 +41,33 @@
     {
         padding-right: 2px;
     }
+
+    /* Slide-in animations for side panel */
+    .slide-in-from-right {
+        animation: slideInRight 300ms ease-out forwards;
+    }
+
+    .fade-in {
+        animation: fadeIn 200ms ease-out forwards;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 

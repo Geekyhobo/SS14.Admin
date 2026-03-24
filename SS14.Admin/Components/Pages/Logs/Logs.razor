@@ -1,5 +1,4 @@
 ﻿@page "/logs"
-@using Content.Server.Database
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using SS14.Admin.AdminLogs
 @using SS14.Admin.Components.Forms
@@ -15,7 +14,7 @@
                 <i class="ri-file-list-3-fill text-yellow-600 dark:text-yellow-500"></i>
                 Admin Logs
             </h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">View administration logs</p>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">View and search administration logs</p>
         </div>
     </div>
 
@@ -23,10 +22,23 @@
     <div class="px-4 sm:px-6 mb-4">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
             <div class="p-3">
-                <LogFilter Filter="@_filter" FormName="LogsPageFilterForm" OnSubmit="RefreshFilter" />
+                <LogFilter Filter="@_filter" Servers="@_servers" FormName="LogsPageFilterForm" OnSubmit="RefreshFilter" />
             </div>
         </div>
     </div>
+
+    @if (!string.IsNullOrEmpty(_queryError))
+    {
+        <div class="px-4 sm:px-6 mb-4">
+            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 flex items-start gap-3">
+                <i class="ri-error-warning-line text-red-500 text-lg mt-0.5"></i>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-red-800 dark:text-red-300">Query failed</p>
+                    <p class="text-sm text-red-600 dark:text-red-400 mt-0.5 break-words">@_queryError</p>
+                </div>
+            </div>
+        </div>
+    }
 
     <!-- Logs Table -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mx-4 sm:mx-6 mb-4">
@@ -37,15 +49,38 @@
                 Pagination="@_pagination"
                 Class="w-full text-sm">
 
-                <PropertyColumn Property="@(log => log.RoundId)" Title="Round" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
-                @* ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract *@
-                <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap"></PropertyColumn>
-                <TemplateColumn Title="Impact" SortBy="@(GridSort<AdminLog>.ByAscending(log => log.Impact))" class="px-4 py-2 whitespace-nowrap">
-                    <span class="@context.Impact.CssColorClass() font-bold">@context.Impact</span>
+                <TemplateColumn Title="Round" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap">
+                    <div class="cursor-pointer" @onclick="() => OpenLogDetails(context)">
+                        @context.RoundId
+                    </div>
                 </TemplateColumn>
-                <PropertyColumn Property="@(log => log.Date)" Title="Date" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap"></PropertyColumn>
-                <PropertyColumn Property="@(log => log.Type)" Title="Type" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap"></PropertyColumn>
-                <PropertyColumn Property="@(log => log.Message)" Title="Message" class="text-gray-600 dark:text-gray-400 px-4 py-2 max-w-xs truncate"></PropertyColumn>
+                <TemplateColumn Title="Server" class="text-gray-700 dark:text-gray-300 px-4 py-2 whitespace-nowrap">
+                    <div class="cursor-pointer" @onclick="() => OpenLogDetails(context)">
+                        @context.ServerName
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="Impact" class="px-4 py-2 whitespace-nowrap">
+                    <div class="cursor-pointer" @onclick="() => OpenLogDetails(context)">
+                        <span class="@context.Impact.CssColorClass("text") @context.Impact.CssColorClass("bg") px-2 py-0.5 rounded font-bold text-xs">
+                            @context.Impact
+                        </span>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="Date" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap">
+                    <div class="cursor-pointer" @onclick="() => OpenLogDetails(context)">
+                        @context.Date.ToString("yyyy-MM-dd HH:mm:ss")
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="Type" class="text-gray-600 dark:text-gray-400 px-4 py-2 whitespace-nowrap">
+                    <div class="cursor-pointer font-mono text-xs" @onclick="() => OpenLogDetails(context)">
+                        @context.Type
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="Message" class="text-gray-600 dark:text-gray-400 px-4 py-2">
+                    <div class="truncate max-w-md cursor-pointer" @onclick="() => OpenLogDetails(context)">
+                        @context.Message
+                    </div>
+                </TemplateColumn>
             </QuickGrid>
         </div>
         <div class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
@@ -53,3 +88,12 @@
         </div>
     </div>
 </div>
+
+<!-- Log Details Drawer -->
+<LogDetailsDrawer
+    IsOpen="_isDrawerOpen"
+    IsOpenChanged="DrawerOpenChanged"
+    LogDetails="_selectedLogDetails"
+    IsLoading="_isLoadingLogDetails"
+    HasError="_hasLogDetailsError"
+    ErrorMessage="_logDetailsError" />

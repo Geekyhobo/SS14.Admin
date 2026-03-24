@@ -1,33 +1,36 @@
 ﻿<div id="@_id">
-    <div class="flex">
-        <button class="datepicker-toggle"><i class="ri-calendar-2-fill"></i></button>
-        <input type="text" readonly>
+    <div class="flex items-center gap-1">
+        <button type="button" class="datepicker-toggle px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-l-lg bg-gray-50 dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors">
+            <i class="ri-calendar-2-fill text-gray-600 dark:text-gray-300"></i>
+        </button>
+        <input type="text" readonly class="date-display w-52 px-3 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg dark:bg-gray-700 dark:text-gray-100 cursor-pointer text-sm" placeholder="Select date range...">
     </div>
     <div class="datepicker-container floating-ui hidden
-                bg-primary-1 shadow-lg border border-black text-primary-1 rounded
-                w-80 p-2">
+                bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg
+                w-80 p-3">
 
-        <div class="flex justify-between pb-2">
-            <button class="prev"><i class="ri-arrow-left-line"></i></button>
-            <div class="current-month"></div>
-            <button class="next"><i class="ri-arrow-right-line"></i></button>
+        <div class="flex justify-between items-center pb-2">
+            <button type="button" class="prev p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"><i class="ri-arrow-left-s-line text-lg"></i></button>
+            <div class="current-month font-semibold text-sm"></div>
+            <button type="button" class="next p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"><i class="ri-arrow-right-s-line text-lg"></i></button>
         </div>
-        <div class="days-container grid grid-cols-7 grid-rows-5 justify-items-center h-32"></div>
-        <div class="flex gap-1 my-3 flex-col">
-            <div class="flex justify-between gap-1">
-                <span class="block w-11">From:</span>
-                <input type="date" class="from-date-input" max="@(DateTime.Now.ToString("yyyy-MM-dd"))">
-                <input type="time" class="from-time-input">
+        <div class="days-container grid grid-cols-7 grid-rows-5 justify-items-center h-32 gap-y-0.5"></div>
+        <div class="flex gap-1 my-3 flex-col text-sm">
+            <div class="flex justify-between gap-1 items-center">
+                <span class="block w-11 font-semibold text-gray-600 dark:text-gray-400">From:</span>
+                <input type="date" class="from-date-input flex-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-gray-100 text-sm" max="@(DateTime.Now.ToString("yyyy-MM-dd"))">
+                <input type="time" class="from-time-input w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-gray-100 text-sm">
             </div>
-            <div class="flex justify-between gap-1">
-                <span class="block w-11">To:</span>
-                <input type="date" class="to-date-input" max="@(DateTime.Now.ToString("yyyy-MM-dd"))">
-                <input type="time" class="to-time-input">
+            <div class="flex justify-between gap-1 items-center">
+                <span class="block w-11 font-semibold text-gray-600 dark:text-gray-400">To:</span>
+                <input type="date" class="to-date-input flex-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-gray-100 text-sm" max="@(DateTime.Now.ToString("yyyy-MM-dd"))">
+                <input type="time" class="to-time-input w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-gray-100 text-sm">
             </div>
         </div>
-        <div class="flex justify-end gap-2 px-2">
-            <button class="cancel-button">Cancel</button>
-            <button class="ok-button">Ok</button>
+        <div class="flex justify-end gap-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+            <button type="button" class="clear-button px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">Clear</button>
+            <button type="button" class="cancel-button px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">Cancel</button>
+            <button type="button" class="ok-button px-4 py-1 text-sm bg-sky-500 hover:bg-sky-600 text-white rounded font-medium transition-colors">OK</button>
         </div>
     </div>
 </div>
