@@ -47,7 +47,7 @@ public partial class EditRank : ComponentBase
 
             if (rankEntity == null)
             {
-                // Rank not found
+                Navigation.NotFound();
                 return;
             }
 

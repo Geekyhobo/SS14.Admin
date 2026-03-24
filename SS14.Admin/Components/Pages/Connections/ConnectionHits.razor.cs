@@ -15,6 +15,9 @@ public partial class ConnectionHits : IDisposable
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+    [Inject]
     private BanHelper? _banHelper { get; set; }
 
     [Inject]
@@ -92,20 +95,23 @@ public partial class ConnectionHits : IDisposable
             .Include(c => c.Server)
             .SingleOrDefaultAsync(c => c.Id == ConnectionId);
 
-        if (connectionLog != null)
+        if (connectionLog == null)
         {
-            Connection = new ConnectionViewModel
-            {
-                Id = connectionLog.Id,
-                UserName = connectionLog.UserName,
-                UserId = connectionLog.UserId,
-                Address = connectionLog.Address?.ToString() ?? "",
-                HWId = connectionLog.HWId != null ? BanHelper.FormatHwid(connectionLog.HWId) ?? "" : "",
-                Time = connectionLog.Time,
-                ServerName = connectionLog.Server.Name,
-                Denied = connectionLog.Denied
-            };
+            Navigation.NotFound();
+            return;
         }
+
+        Connection = new ConnectionViewModel
+        {
+            Id = connectionLog.Id,
+            UserName = connectionLog.UserName,
+            UserId = connectionLog.UserId,
+            Address = connectionLog.Address?.ToString() ?? "",
+            HWId = connectionLog.HWId != null ? BanHelper.FormatHwid(connectionLog.HWId) ?? "" : "",
+            Time = connectionLog.Time,
+            ServerName = connectionLog.Server.Name,
+            Denied = connectionLog.Denied
+        };
 
         if (Connection != null)
         {

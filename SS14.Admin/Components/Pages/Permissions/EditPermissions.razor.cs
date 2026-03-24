@@ -34,7 +34,7 @@ public partial class EditPermissions : ComponentBase
 
         if (adminEntity == null)
         {
-            // Handle not found or not im lazy
+            Navigation.NotFound();
             return;
         }
 

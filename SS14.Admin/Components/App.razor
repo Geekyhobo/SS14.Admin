@@ -1,11 +1,18 @@
 
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en">
 <!--suppress HtmlRequiredTitleElement -->
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/" />
+    <script>
+        (function() {
+            var o = localStorage.getItem('darkModeOverride');
+            var d = o !== null ? o === 'true' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (d) document.documentElement.classList.add('dark');
+        })();
+    </script>
     <link rel="icon" href="/favicon.ico" asp-append-version="true"/>
     <link rel="stylesheet" href="/css/output.css"/>
     <link rel="stylesheet" href="/lib/remixicon/remixicon.css">

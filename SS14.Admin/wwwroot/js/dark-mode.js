@@ -1,6 +1,5 @@
 ﻿/**
  * Gets the client's preferences, i.e. dark mode and PII censoring.
- * yes i know this is on darkmode.js or whatever ill refactor it sometime
  * @returns {ClientPreferences}
  */
 window.getClientPreferences = () => {
@@ -22,4 +21,17 @@ window.getClientPreferences = () => {
         darkMode,
         censorPii
     };
+}
+
+/**
+ * Applies or removes the 'dark' class on <html>.
+ * Called from Blazor via JS interop when the user toggles dark mode.
+ * @param {boolean} dark
+ */
+window.applyDarkMode = (dark) => {
+    if (dark) {
+        document.documentElement.classList.add("dark");
+    } else {
+        document.documentElement.classList.remove("dark");
+    }
 }

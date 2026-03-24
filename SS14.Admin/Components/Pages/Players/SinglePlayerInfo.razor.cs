@@ -79,11 +79,11 @@ namespace SS14.Admin.Components.Pages.Players
             var player = await context.Player.AsNoTracking()
                 .SingleOrDefaultAsync(p => p.UserId == userId);
 
-            if (player == null)
-            {
-                _isLoading = false;
-                return;
-            }
+        if (player == null)
+        {
+            Navigation!.NotFound();
+            return;
+        }
 
             PlayerModel = new PlayerViewModel
             {

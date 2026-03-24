@@ -35,7 +35,7 @@ namespace SS14.Admin.Components.Pages.Bans.BanTemplates
 
             if (_template == null)
             {
-                ErrorMessage = "Template not found";
+                NavigationManager.NotFound();
                 return;
             }
 

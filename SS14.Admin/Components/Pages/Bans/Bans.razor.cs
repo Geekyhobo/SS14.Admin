@@ -296,6 +296,10 @@ public partial class Bans : IDisposable
         await context.SaveChangesAsync();
     }
 
+    private string GetRowClass(BanViewModel ban) => ban.Active
+        ? "bg-red-50/50 dark:bg-red-900/10"
+        : "opacity-75";
+
     public class BanViewModel
     {
         public int Id { get; set; }

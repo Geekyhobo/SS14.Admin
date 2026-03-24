@@ -65,6 +65,7 @@
                        @ref="Grid"
                        Items="@_bansList.AsQueryable()"
                        Pagination="@_pagination"
+                       RowClass="@GetRowClass"
                        Class="w-full text-sm">
                 <PropertyColumn Property="@(ban => ban.PlayerName)" Title="Name" class="text-gray-700 dark:text-gray-300 px-2 py-2 whitespace-nowrap"></PropertyColumn>
                 @if (_showIpColumn)

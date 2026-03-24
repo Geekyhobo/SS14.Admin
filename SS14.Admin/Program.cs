@@ -161,6 +161,7 @@ if (!string.IsNullOrEmpty(pathBase))
 
 app.UseAuthentication();
 app.UseHttpsRedirection();
+app.UseStatusCodePagesWithReExecute("/not-found");
 app.MapStaticAssets();
 
 app.UseRouting();

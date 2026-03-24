@@ -1,15 +1,9 @@
 @using SS14.Admin.Helpers
-@using SS14.Admin.Services
 @using Content.Server.Database
 @using Microsoft.EntityFrameworkCore
 @inherits LayoutComponentBase
-@implements IDisposable
 
-@inject ClientPreferencesService ClientPreferences
-
-<div class="@(_clientPreferences.darkMode ? "dark" : "")">
-
-    <header class="Header flex gap-x-8 p-2 pl-0 items-center sticky top-0 bg-primary-1 header-height z-20 pl-2">
+<header class="Header flex gap-x-8 p-2 pl-0 items-center sticky top-0 bg-primary-1 header-height z-20 pl-2">
         <img class="m-3 h-9 md:block" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
         <h1 class="sr-only">space station 14 admin panel</h1>
         <div class="sm:flex focus-outline items-center h-9 border dark:border-neutral-400 px-2 rounded-full">
@@ -47,12 +41,10 @@
         </CascadingValue>
     </div>
 
-    <div id="blazor-error-ui" class="bg-errorBg text-errorText">
-        An unhandled error has occurred.
-        <a href="" class="text-link">Reload</a>
-        <a class="text-textSecondary">🗙</a>
-    </div>
-
+<div id="blazor-error-ui" class="bg-errorBg text-errorText">
+    An unhandled error has occurred.
+    <a href="" class="text-link">Reload</a>
+    <a class="text-textSecondary">🗙</a>
 </div>
 
 @code
@@ -68,11 +60,8 @@
 
     public List<Breadcrumb> Breadcrumbs = [];
 
-    private ClientPreferencesService.ClientPreferences _clientPreferences;
-
     protected override async Task OnInitializedAsync()
     {
-        ClientPreferences.OnChange += OnChange;
         var authState = await AuthState!;
         var user = authState.User;
         adminUsername = user.Identity?.Name ?? string.Empty;
@@ -97,25 +86,5 @@
                 adminSubtitle = adminData.AdminRank.Name;
             }
         }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _clientPreferences = await ClientPreferences.GetClientPreferences();
-            StateHasChanged();
-        }
-    }
-
-    private void OnChange(ClientPreferencesService.ClientPreferences clientPreferences)
-    {
-        _clientPreferences = clientPreferences;
-        StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        ClientPreferences.OnChange -= OnChange;
     }
 }

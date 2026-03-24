@@ -12,6 +12,9 @@ public partial class BanHits
     [Inject]
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationState { get; set; }
 
@@ -66,42 +69,45 @@ public partial class BanHits
             .Include(b => b.Hwids)
             .SingleOrDefaultAsync();
 
-        if (banEntity != null)
+        if (banEntity == null)
         {
-            // Load player and admin info
-            var playerIds = (banEntity.Players?.Select(p => p.UserId) ?? Enumerable.Empty<Guid>()).ToList();
-            var adminIds = new List<Guid>();
-            if (banEntity.BanningAdmin.HasValue) adminIds.Add(banEntity.BanningAdmin.Value);
-            if (banEntity.Unban?.UnbanningAdmin.HasValue == true) adminIds.Add(banEntity.Unban.UnbanningAdmin!.Value);
-            var allIds = playerIds.Union(adminIds).ToList();
-
-            var playerMap = allIds.Count > 0
-                ? await context.Player.AsNoTracking()
-                    .Where(p => allIds.Contains(p.UserId))
-                    .ToDictionaryAsync(p => p.UserId)
-                : new Dictionary<Guid, Player>();
-
-            var firstPlayerId = banEntity.Players?.FirstOrDefault()?.UserId;
-            Player? player = firstPlayerId.HasValue && playerMap.TryGetValue(firstPlayerId.Value, out var p) ? p : null;
-            Player? admin = banEntity.BanningAdmin.HasValue && playerMap.TryGetValue(banEntity.BanningAdmin.Value, out var a) ? a : null;
-            Player? unbanAdmin = banEntity.Unban?.UnbanningAdmin.HasValue == true
-                && playerMap.TryGetValue(banEntity.Unban.UnbanningAdmin!.Value, out var ua) ? ua : null;
-
-            Ban = new BanViewModel
-            {
-                Id = banEntity.Id,
-                PlayerUserId = banEntity.Players?.FirstOrDefault()?.UserId.ToString() ?? "",
-                PlayerName = player?.LastSeenUserName,
-                IPAddress = banEntity.Addresses?.FirstOrDefault()?.Address.ToString() ?? "",
-                Hwid = BanHelper.FormatHwid(banEntity.Hwids?.FirstOrDefault()?.HWId.ToImmutable()) ?? "",
-                Reason = banEntity.Reason,
-                BanTime = banEntity.BanTime,
-                ExpirationTime = banEntity.ExpirationTime,
-                UnbanTime = banEntity.Unban?.UnbanTime,
-                Admin = admin?.LastSeenUserName,
-                UnbanAdmin = unbanAdmin?.LastSeenUserName
-            };
+            Navigation.NotFound();
+            return;
         }
+
+        // Load player and admin info
+        var playerIds = (banEntity.Players?.Select(p => p.UserId) ?? Enumerable.Empty<Guid>()).ToList();
+        var adminIds = new List<Guid>();
+        if (banEntity.BanningAdmin.HasValue) adminIds.Add(banEntity.BanningAdmin.Value);
+        if (banEntity.Unban?.UnbanningAdmin.HasValue == true) adminIds.Add(banEntity.Unban.UnbanningAdmin!.Value);
+        var allIds = playerIds.Union(adminIds).ToList();
+
+        var playerMap = allIds.Count > 0
+            ? await context.Player.AsNoTracking()
+                .Where(p => allIds.Contains(p.UserId))
+                .ToDictionaryAsync(p => p.UserId)
+            : new Dictionary<Guid, Player>();
+
+        var firstPlayerId = banEntity.Players?.FirstOrDefault()?.UserId;
+        Player? player = firstPlayerId.HasValue && playerMap.TryGetValue(firstPlayerId.Value, out var p) ? p : null;
+        Player? admin = banEntity.BanningAdmin.HasValue && playerMap.TryGetValue(banEntity.BanningAdmin.Value, out var a) ? a : null;
+        Player? unbanAdmin = banEntity.Unban?.UnbanningAdmin.HasValue == true
+            && playerMap.TryGetValue(banEntity.Unban.UnbanningAdmin!.Value, out var ua) ? ua : null;
+
+        Ban = new BanViewModel
+        {
+            Id = banEntity.Id,
+            PlayerUserId = banEntity.Players?.FirstOrDefault()?.UserId.ToString() ?? "",
+            PlayerName = player?.LastSeenUserName,
+            IPAddress = banEntity.Addresses?.FirstOrDefault()?.Address.ToString() ?? "",
+            Hwid = BanHelper.FormatHwid(banEntity.Hwids?.FirstOrDefault()?.HWId.ToImmutable()) ?? "",
+            Reason = banEntity.Reason,
+            BanTime = banEntity.BanTime,
+            ExpirationTime = banEntity.ExpirationTime,
+            UnbanTime = banEntity.Unban?.UnbanTime,
+            Admin = admin?.LastSeenUserName,
+            UnbanAdmin = unbanAdmin?.LastSeenUserName
+        };
 
         if (Ban != null)
         {
