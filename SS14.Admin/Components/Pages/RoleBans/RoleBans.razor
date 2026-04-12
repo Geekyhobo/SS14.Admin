@@ -66,24 +66,24 @@
                        Items="@_roleBansList.AsQueryable()"
                        Pagination="@_pagination"
                        Class="w-full text-sm">
-                <PropertyColumn Property="@(ban => ban.PlayerName)" Title="Name" class="text-gray-700 dark:text-gray-300 px-2 py-2 whitespace-nowrap"></PropertyColumn>
-                <PropertyColumn Property="@(ban => ban.RoleId)" Title="Role" class="text-gray-700 dark:text-gray-300 px-2 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(ban => ban.PlayerNameDisplay)" Title="Name" class="text-gray-700 dark:text-gray-300 px-2 py-2"></PropertyColumn>
+                <PropertyColumn Property="@(ban => ban.RoleDisplay)" Title="Role" class="text-gray-700 dark:text-gray-300 px-2 py-2"></PropertyColumn>
                 @if (_showIpColumn)
                 {
-                    <PropertyColumn Property="@(ban => RedactIp(ban.IPAddress))" Title="IP" class="text-gray-700 dark:text-gray-300 px-2 py-2 whitespace-nowrap"></PropertyColumn>
+                    <PropertyColumn Property="@(ban => RedactIps(ban.IPAddresses))" Title="IP" class="text-gray-700 dark:text-gray-300 px-2 py-2"></PropertyColumn>
                 }
                 @if (_showHwidColumn)
                 {
-                    <PropertyColumn Property="@(ban => RedactHwid(ban.Hwid))" Title="HWID" class="text-gray-700 dark:text-gray-300 px-2 py-2 whitespace-nowrap"></PropertyColumn>
+                    <PropertyColumn Property="@(ban => RedactHwids(ban.Hwids))" Title="HWID" class="text-gray-700 dark:text-gray-300 px-2 py-2"></PropertyColumn>
                 }
                 @if (_showGuidColumn)
                 {
-                    <PropertyColumn Property="@(ban => ban.PlayerUserId)" Title="GUID" class="text-gray-600 dark:text-gray-400 px-2 py-2 whitespace-nowrap"></PropertyColumn>
+                    <PropertyColumn Property="@(ban => ban.PlayerUserIdDisplay)" Title="GUID" class="text-gray-600 dark:text-gray-400 px-2 py-2"></PropertyColumn>
                 }
                 <PropertyColumn Property="@(ban => ban.Reason)" Title="Reason" class="text-gray-600 dark:text-gray-400 px-2 py-2 max-w-xs truncate"></PropertyColumn>
                 <PropertyColumn Property="@(ban => ban.BanTime)" Title="Ban Time" Format="yyyy-MM-dd HH:mm" Sortable="true" class="text-gray-600 dark:text-gray-400 px-2 py-2 whitespace-nowrap"></PropertyColumn>
                 <PropertyColumn Property="@(ban => ban.ExpirationTime)" Title="Expires" Format="yyyy-MM-dd HH:mm" Sortable="true" class="text-gray-600 dark:text-gray-400 px-2 py-2 whitespace-nowrap"></PropertyColumn>
-                <PropertyColumn Property="@(ban => ban.RoundId)" Title="Round" class="text-gray-700 dark:text-gray-300 px-2 py-2 whitespace-nowrap"></PropertyColumn>
+                <PropertyColumn Property="@(ban => ban.RoundDisplay)" Title="Round" class="text-gray-700 dark:text-gray-300 px-2 py-2"></PropertyColumn>
                 <PropertyColumn Property="@(ban => ban.Admin)" Title="Admin" class="text-gray-700 dark:text-gray-300 px-2 py-2 whitespace-nowrap"></PropertyColumn>
                 <TemplateColumn Title="Actions" class="px-2 py-2 whitespace-nowrap">
                     <div class="flex justify-center">

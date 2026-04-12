@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using SS14.Admin.Helpers;
 using System.Security.Claims;
 using SS14.Admin.Services;
+using NpgsqlTypes;
 
 namespace SS14.Admin.Components.Pages.RoleBans;
 
@@ -100,6 +101,31 @@ public partial class RoleBans : IDisposable
         if (string.IsNullOrWhiteSpace(hwid) || !_shouldCensorPii)
             return hwid;
         return PiiRedactor!.RedactHardwareId(hwid);
+    }
+
+    private string RedactIps(IEnumerable<string> ipAddresses)
+    {
+        return string.Join(", ", ipAddresses.Select(RedactIp).Where(ip => !string.IsNullOrWhiteSpace(ip)));
+    }
+
+    private string RedactHwids(IEnumerable<string> hwids)
+    {
+        return string.Join(", ", hwids.Select(RedactHwid).Where(hwid => !string.IsNullOrWhiteSpace(hwid)));
+    }
+
+    private static string FormatRole(BanRole role)
+    {
+        return string.Concat(role.RoleType, ":", role.RoleId);
+    }
+
+    private static string FormatAddress(NpgsqlInet address)
+    {
+        return address.FormatCidr().ToString();
+    }
+
+    private static string JoinValues<T>(IEnumerable<T> values)
+    {
+        return string.Join(", ", values);
     }
 
     public void Dispose()
@@ -196,12 +222,17 @@ public partial class RoleBans : IDisposable
         {
             var search = _model.Search.ToLower();
             result = result.Where(x =>
-                (x.player != null && x.player.LastSeenUserName.ToLower().Contains(search)) ||
-                (x.ban.Players != null && x.ban.Players.Any(bp => bp.UserId.ToString().ToLower().Contains(search))) ||
+                (x.ban.Players != null && x.ban.Players.Any(bp =>
+                    bp.UserId.ToString().ToLower().Contains(search) ||
+                    playerMap.TryGetValue(bp.UserId, out var matchedPlayer) && matchedPlayer.LastSeenUserName.ToLower().Contains(search))) ||
                 (x.ban.Reason != null && x.ban.Reason.ToLower().Contains(search)) ||
                 (x.admin != null && x.admin.LastSeenUserName.ToLower().Contains(search)) ||
-                (x.ban.Roles != null && x.ban.Roles.Any(r => r.RoleId.ToLower().Contains(search))) ||
-                (x.ban.Addresses != null && x.ban.Addresses.Any(a => a.Address.ToString().ToLower().Contains(search)))
+                (x.ban.Roles != null && x.ban.Roles.Any(r =>
+                    r.RoleType.ToLower().Contains(search) ||
+                    r.RoleId.ToLower().Contains(search) ||
+                    FormatRole(r).ToLower().Contains(search))) ||
+                (x.ban.Addresses != null && x.ban.Addresses.Any(a => FormatAddress(a.Address).ToLower().Contains(search))) ||
+                (x.ban.Hwids != null && x.ban.Hwids.Any(h => h.HWId.ToImmutable().ToString().ToLower().Contains(search)))
             ).ToList();
         }
 
@@ -209,7 +240,10 @@ public partial class RoleBans : IDisposable
         {
             var roleFilter = _model.RoleFilter.ToLower();
             result = result.Where(x =>
-                x.ban.Roles != null && x.ban.Roles.Any(r => r.RoleId.ToLower().Contains(roleFilter))
+                x.ban.Roles != null && x.ban.Roles.Any(r =>
+                    r.RoleType.ToLower().Contains(roleFilter) ||
+                    r.RoleId.ToLower().Contains(roleFilter) ||
+                    FormatRole(r).ToLower().Contains(roleFilter))
             ).ToList();
         }
 
@@ -222,22 +256,39 @@ public partial class RoleBans : IDisposable
         await using var context = await ContextFactory!.CreateDbContextAsync();
         var entities = await GetRoleBansQueryEntities(context);
 
+        var playerIds = entities
+            .Where(x => x.ban.Players != null)
+            .SelectMany(x => x.ban.Players!)
+            .Select(player => player.UserId)
+            .Distinct()
+            .ToList();
+
+        var playerNameMap = playerIds.Count > 0
+            ? await context.Player.AsNoTracking()
+                .Where(player => playerIds.Contains(player.UserId))
+                .ToDictionaryAsync(player => player.UserId, player => player.LastSeenUserName)
+            : new Dictionary<Guid, string>();
+
         var now = DateTime.UtcNow;
 
         // Map entities to view models
         _roleBansList = entities.Select(x => new RoleBanViewModel
         {
             Id = x.ban.Id,
-            PlayerUserId = x.ban.Players?.FirstOrDefault()?.UserId.ToString() ?? "",
-            PlayerName = x.player?.LastSeenUserName ?? "",
-            IPAddress = x.ban.Addresses?.FirstOrDefault()?.Address.ToString() ?? "",
-            Hwid = x.ban.Hwids?.FirstOrDefault()?.HWId.ToImmutable().ToString() ?? "",
+            PlayerUserIds = x.ban.Players?.Select(player => player.UserId.ToString()).ToArray() ?? [],
+            PlayerNames = x.ban.Players?
+                .Select(player => playerNameMap.GetValueOrDefault(player.UserId))
+                .OfType<string>()
+                .Distinct()
+                .ToArray() ?? [],
+            IPAddresses = x.ban.Addresses?.Select(address => FormatAddress(address.Address)).ToArray() ?? [],
+            Hwids = x.ban.Hwids?.Select(hwid => hwid.HWId.ToImmutable().ToString()).ToArray() ?? [],
             Reason = x.ban.Reason,
             BanTime = x.ban.BanTime,
             ExpirationTime = x.ban.ExpirationTime,
             Admin = x.admin?.LastSeenUserName ?? "",
-            RoleId = x.ban.Roles?.FirstOrDefault()?.RoleId ?? "",
-            RoundId = x.ban.Rounds?.FirstOrDefault()?.RoundId,
+            Roles = x.ban.Roles?.Select(FormatRole).ToArray() ?? [],
+            Rounds = x.ban.Rounds?.Select(round => round.RoundId).ToArray() ?? [],
             Active = x.ban.Unban == null && (!x.ban.ExpirationTime.HasValue || x.ban.ExpirationTime > now)
         }).ToList();
 
@@ -313,16 +364,21 @@ public partial class RoleBans : IDisposable
         public int Id { get; set; }
         public string Reason { get; set; } = "";
         public DateTime BanTime { get; set; }
-        public int? RoundId { get; set; }
+        public int[] Rounds { get; set; } = [];
         public DateTime? ExpirationTime { get; set; }
         public string Admin { get; set; } = "";
-        public string PlayerName { get; set; } = "";
-        public string RoleId { get; set; } = "";
+        public string[] PlayerNames { get; set; } = [];
+        public string[] Roles { get; set; } = [];
         public bool Active { get; set; }
 
         //PII
-        public string IPAddress { get; set; } = "";
-        public string Hwid { get; set; } = "";
-        public string PlayerUserId { get; set; } = "";
+        public string[] IPAddresses { get; set; } = [];
+        public string[] Hwids { get; set; } = [];
+        public string[] PlayerUserIds { get; set; } = [];
+
+        public string PlayerNameDisplay => JoinValues(PlayerNames);
+        public string RoleDisplay => JoinValues(Roles);
+        public string RoundDisplay => JoinValues(Rounds);
+        public string PlayerUserIdDisplay => JoinValues(PlayerUserIds);
     }
 }
