@@ -8,6 +8,14 @@ namespace SS14.Admin.Components.Forms
 {
     public partial class CreateBanForm : ComponentBase
     {
+        public static readonly (int Minutes, string Label)[] DurationAdjustments =
+        [
+            (60, "1h"),
+            (1440, "1d"),
+            (10080, "7d"),
+            (43200, "30d")
+        ];
+
         [Inject]
         protected PostgresServerDbContext DbContext { get; set; } = default!;
 
@@ -31,6 +39,7 @@ namespace SS14.Admin.Components.Forms
 
         protected string? ErrorMessage { get; set; }
         protected string? SuccessMessage { get; set; }
+        protected string DurationSummary => BanDurationAdjuster.FormatMinutes(BanModel.LengthMinutes);
 
         /// <summary>
         /// Handles valid form submission.
@@ -112,9 +121,9 @@ namespace SS14.Admin.Components.Forms
             NavigationManager.NavigateTo("/bans");
         }
 
-        protected void SetDuration(int minutes)
+        protected void AdjustDuration(int minutesDelta)
         {
-            BanModel.LengthMinutes = minutes;
+            BanModel.LengthMinutes = BanDurationAdjuster.AdjustMinutes(BanModel.LengthMinutes, minutesDelta);
         }
 
         /// <summary>

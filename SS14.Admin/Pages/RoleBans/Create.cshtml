@@ -46,13 +46,18 @@
             <div class="row">
                 <div class="col-lg-6">
                     <input asp-for="Input.LengthMinutes" id="durationInput" class="form-control">
+                    <small id="durationSummary" class="form-text text-muted">Current duration: Permanent</small>
                 </div>
                 <div class="col-lg-6">
                     <div class="row g-0">
-                        <button data-duration="60" data-suffix="h" class="durationButton btn btn-secondary col"></button>
-                        <button data-duration="1440" data-suffix="d" class="durationButton btn btn-secondary col"></button>
-                        <button data-duration="10080" data-suffix="w" class="durationButton btn btn-secondary col"></button>
-                        <button data-duration="43200" data-suffix="M" class="durationButton btn btn-secondary col"></button>
+                        <button data-duration="-60" data-label="1h" class="durationButton btn btn-danger col"></button>
+                        <button data-duration="60" data-label="1h" class="durationButton btn btn-success col"></button>
+                        <button data-duration="-1440" data-label="1d" class="durationButton btn btn-danger col"></button>
+                        <button data-duration="1440" data-label="1d" class="durationButton btn btn-success col"></button>
+                        <button data-duration="-10080" data-label="7d" class="durationButton btn btn-danger col"></button>
+                        <button data-duration="10080" data-label="7d" class="durationButton btn btn-success col"></button>
+                        <button data-duration="-43200" data-label="30d" class="durationButton btn btn-danger col"></button>
+                        <button data-duration="43200" data-label="30d" class="durationButton btn btn-success col"></button>
                     </div>
                 </div>
             </div>
@@ -72,36 +77,4 @@
     </div>
     <input type="submit" asp-page-handler="Create" value="Create" class="btn btn-primary">
 </form>
-
-
-<script>
-{
-    let durationInput = document.getElementById("durationInput");
-    let updateButtons = function() {
-        for (const btn of document.querySelectorAll(".durationButton")) {
-            let dur = Number(btn.dataset.duration);
-            let suffix = btn.dataset.suffix;
-
-            let val = Number(durationInput.value);
-            val /= dur;
-            btn.innerText = `+1${suffix} (${Math.round(val)})`;
-        }
-    };
-
-    durationInput.addEventListener("change", () => {
-        updateButtons();
-    });
-
-    for (const btn of document.querySelectorAll(".durationButton")) {
-        let dur = Number(btn.dataset.duration);
-        btn.addEventListener("click", e => {
-            durationInput.value = (Number(durationInput.value) + dur).toString();
-            updateButtons();
-            e.preventDefault();
-        });
-    }
-
-    updateButtons();
-}
-
-</script>
+<partial name="Shared/BanTimeButtonScript" />

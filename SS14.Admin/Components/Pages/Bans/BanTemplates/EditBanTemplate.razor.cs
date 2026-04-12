@@ -3,11 +3,20 @@ using Content.Server.Database;
 using Content.Shared.Database;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using SS14.Admin.Helpers;
 
 namespace SS14.Admin.Components.Pages.Bans.BanTemplates
 {
     public partial class EditBanTemplate : ComponentBase
     {
+        private static readonly (int Minutes, string Label)[] DurationAdjustments =
+        [
+            (60, "1h"),
+            (1440, "1d"),
+            (10080, "7d"),
+            (43200, "30d")
+        ];
+
         [Parameter]
         public int Id { get; set; }
 
@@ -19,6 +28,7 @@ namespace SS14.Admin.Components.Pages.Bans.BanTemplates
 
         protected string? ErrorMessage { get; set; }
         protected string? SuccessMessage { get; set; }
+        protected string DurationSummary => BanDurationAdjuster.FormatMinutes(_inputModel.LengthMinutes);
 
         private BanTemplate? _template;
         private InputModel _inputModel = new();
@@ -81,9 +91,9 @@ namespace SS14.Admin.Components.Pages.Bans.BanTemplates
             SuccessMessage = "Changes saved successfully";
         }
 
-        protected void SetDuration(int minutes)
+        protected void AdjustDuration(int minutesDelta)
         {
-            _inputModel.LengthMinutes = minutes;
+            _inputModel.LengthMinutes = BanDurationAdjuster.AdjustMinutes(_inputModel.LengthMinutes, minutesDelta);
         }
 
         private void ToggleExemptFlag(ServerBanExemptFlags flag, bool isChecked)
