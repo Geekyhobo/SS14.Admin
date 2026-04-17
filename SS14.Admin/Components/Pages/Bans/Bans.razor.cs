@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using SS14.Admin.Helpers;
 using System.Security.Claims;
 using SS14.Admin.Services;
+using NpgsqlTypes;
 
 namespace SS14.Admin.Components.Pages.Bans;
 
@@ -46,6 +47,8 @@ public partial class Bans : IDisposable
     private bool _showIpColumn = false;
     private bool _showHwidColumn = false;
     private bool _showGuidColumn = false;
+
+    private bool ShowIdentityColumn => _showIpColumn || _showHwidColumn || _showGuidColumn;
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,6 +103,46 @@ public partial class Bans : IDisposable
         if (string.IsNullOrWhiteSpace(hwid) || !_shouldCensorPii)
             return hwid;
         return PiiRedactor!.RedactHardwareId(hwid);
+    }
+
+    private static string FormatAddress(NpgsqlInet address)
+    {
+        return address.FormatCidr().ToString();
+    }
+
+    private static string FormatLabel(string label, string value)
+    {
+        return string.Concat(label, ": ", value);
+    }
+
+    private string RedactIdentity(string label, string value)
+    {
+        var displayValue = label switch
+        {
+            "IP" => RedactIp(value),
+            "HWID" => RedactHwid(value),
+            _ => value
+        };
+
+        return FormatLabel(label, displayValue);
+    }
+
+    private static string GetStatusBadgeClass(BanViewModel ban)
+    {
+        if (ban.Active)
+            return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200 ring-red-200 dark:ring-red-800/60";
+
+        if (ban.IsRepealed)
+            return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200 ring-emerald-200 dark:ring-emerald-800/60";
+
+        return "bg-gray-100 text-gray-700 dark:bg-gray-700/60 dark:text-gray-200 ring-gray-200 dark:ring-gray-600";
+    }
+
+    private static string GetHitBadgeClass(int hitCount)
+    {
+        return hitCount > 0
+            ? "bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-900/30 dark:text-sky-200 dark:hover:bg-sky-900/50 ring-sky-200 dark:ring-sky-800/60"
+            : "bg-gray-100 text-gray-500 dark:bg-gray-700/60 dark:text-gray-400 ring-gray-200 dark:ring-gray-600";
     }
 
     public void Dispose()
@@ -195,10 +238,13 @@ public partial class Bans : IDisposable
         {
             var search = _model.Search.ToLower();
             result = result.Where(x =>
-                (x.player != null && x.player.LastSeenUserName.ToLower().Contains(search)) ||
-                (x.ban.Players != null && x.ban.Players.Any(bp => bp.UserId.ToString().ToLower().Contains(search))) ||
+                (x.ban.Players != null && x.ban.Players.Any(bp =>
+                    bp.UserId.ToString().ToLower().Contains(search) ||
+                    playerMap.TryGetValue(bp.UserId, out var matchedPlayer) && matchedPlayer.LastSeenUserName.ToLower().Contains(search))) ||
                 (x.ban.Reason != null && x.ban.Reason.ToLower().Contains(search)) ||
-                (x.admin != null && x.admin.LastSeenUserName.ToLower().Contains(search))
+                (x.admin != null && x.admin.LastSeenUserName.ToLower().Contains(search)) ||
+                (x.ban.Addresses != null && x.ban.Addresses.Any(address => FormatAddress(address.Address).ToLower().Contains(search))) ||
+                (x.ban.Hwids != null && x.ban.Hwids.Any(hwid => hwid.HWId.ToImmutable().ToString().ToLower().Contains(search)))
             ).ToList();
         }
 
@@ -211,22 +257,40 @@ public partial class Bans : IDisposable
         await using var context = await ContextFactory!.CreateDbContextAsync();
         var entities = await GetBansQueryEntities(context);
 
+        var playerIds = entities
+            .Where(x => x.ban.Players != null)
+            .SelectMany(x => x.ban.Players!)
+            .Select(player => player.UserId)
+            .Distinct()
+            .ToList();
+
+        var playerNameMap = playerIds.Count > 0
+            ? await context.Player.AsNoTracking()
+                .Where(player => playerIds.Contains(player.UserId))
+                .ToDictionaryAsync(player => player.UserId, player => player.LastSeenUserName)
+            : new Dictionary<Guid, string>();
+
         var now = DateTime.UtcNow;
 
         // Map entities to view models
         _bansList = entities.Select(x => new BanViewModel
         {
             Id = x.ban.Id,
-            PlayerUserId = x.ban.Players?.FirstOrDefault()?.UserId.ToString() ?? "",
-            PlayerName = x.player?.LastSeenUserName ?? "",
-            IPAddress = x.ban.Addresses?.FirstOrDefault()?.Address.ToString() ?? "",
-            Hwid = x.ban.Hwids?.FirstOrDefault()?.HWId.ToImmutable().ToString() ?? "",
+            PlayerUserIds = x.ban.Players?.Select(player => player.UserId.ToString()).ToArray() ?? [],
+            PlayerNames = x.ban.Players?
+                .Select(player => playerNameMap.GetValueOrDefault(player.UserId))
+                .OfType<string>()
+                .Distinct()
+                .ToArray() ?? [],
+            IPAddresses = x.ban.Addresses?.Select(address => FormatAddress(address.Address)).ToArray() ?? [],
+            Hwids = x.ban.Hwids?.Select(hwid => hwid.HWId.ToImmutable().ToString()).ToArray() ?? [],
             Reason = x.ban.Reason,
             BanTime = x.ban.BanTime,
             ExpirationTime = x.ban.ExpirationTime,
             HitCount = x.ban.BanHits?.Count ?? 0,
             Admin = x.admin?.LastSeenUserName ?? "",
-            Active = x.ban.Unban == null && (!x.ban.ExpirationTime.HasValue || x.ban.ExpirationTime > now)
+            Active = x.ban.Unban == null && (!x.ban.ExpirationTime.HasValue || x.ban.ExpirationTime > now),
+            IsRepealed = x.ban.Unban != null
         }).ToList();
 
         _confirmations.Clear();
@@ -297,24 +361,47 @@ public partial class Bans : IDisposable
     }
 
     private string GetRowClass(BanViewModel ban) => ban.Active
-        ? "bg-red-50/50 dark:bg-red-900/10"
-        : "opacity-75";
+        ? "border-l-4 border-red-400/70 bg-red-50/50 hover:bg-red-50 dark:border-red-500/50 dark:bg-red-900/10 dark:hover:bg-red-900/20"
+        : ban.IsRepealed
+            ? "border-l-4 border-emerald-300/70 bg-emerald-50/40 hover:bg-emerald-50 dark:border-emerald-500/40 dark:bg-emerald-900/10 dark:hover:bg-emerald-900/20"
+            : "border-l-4 border-gray-200 bg-gray-50/50 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800/40 dark:hover:bg-gray-800/70";
 
     public class BanViewModel
     {
         public int Id { get; set; }
         public string Reason { get; set; } = "";
         public DateTime BanTime { get; set; }
-        public int? Round { get; set; }
         public DateTime? ExpirationTime { get; set; }
         public int HitCount { get; set; }
         public string Admin { get; set; } = "";
-        public string PlayerName { get; set; } = "";
+        public string[] PlayerNames { get; set; } = [];
         public bool Active { get; set; }
+        public bool IsRepealed { get; set; }
 
         //PII
-        public string IPAddress { get; set; } = "";
-        public string Hwid { get; set; } = "";
-        public string PlayerUserId { get; set; } = "";
+        public string[] IPAddresses { get; set; } = [];
+        public string[] Hwids { get; set; } = [];
+        public string[] PlayerUserIds { get; set; } = [];
+
+        public string StatusLabel => Active ? "Active" : IsRepealed ? "Unbanned" : "Expired";
+        public string ExpirationLabel => ExpirationTime.HasValue ? ExpirationTime.Value.ToString("yyyy-MM-dd HH:mm") : "Permanent";
+        public string[] VisibleIdentityItems(bool showGuid, bool showIp, bool showHwid)
+        {
+            var items = new List<string>();
+
+            if (showGuid)
+                items.AddRange(PlayerUserIds.Select(value => FormatLabel("GUID", value)));
+
+            if (showIp)
+                items.AddRange(IPAddresses.Select(value => FormatLabel("IP", value)));
+
+            if (showHwid)
+                items.AddRange(Hwids.Select(value => FormatLabel("HWID", value)));
+
+            return items.ToArray();
+        }
+
+        public string PrimaryName => PlayerNames.FirstOrDefault() ?? "Unknown player";
+        public int AdditionalPlayerCount => Math.Max(PlayerNames.Length - 1, 0);
     }
 }

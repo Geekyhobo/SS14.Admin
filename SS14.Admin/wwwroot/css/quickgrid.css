@@ -1,23 +1,27 @@
-﻿.quickgrid[theme="default"] > tbody > tr,
-.quickgrid[theme="default"] > thead > tr > th
+﻿.quickgrid[theme="default"] > thead > tr > th
 {
     height: 40px;
 }
 
-/*.quickgrid[theme="default"] > tbody > tr:not([aria-rowindex])
+.quickgrid[theme="default"] > tbody > tr
 {
-    display: none;
-}*/
+    min-height: 40px;
+}
 
 @layer components
 {
     .quickgrid[theme="default"] > tbody > tr:not(:last-of-type)
     {
-        @apply border-b border-neutral-200 dark:border-neutral-700;
+        @apply border-b border-neutral-200/80 dark:border-neutral-700/60;
     }
 
     .quickgrid[theme="default"] > tbody > tr:hover
     {
-        @apply bg-neutral-100 dark:bg-neutral-800;
+        @apply bg-neutral-100/80 dark:bg-neutral-700/30;
+    }
+
+    .quickgrid[theme="default"] > thead > tr > th
+    {
+        @apply text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-50/80 dark:bg-gray-800/80;
     }
 }
