@@ -10,15 +10,8 @@ namespace SS14.Admin.Tests;
 /// Every test builds a real SQL query and uses the connection defined in appsettings to do testing on a real db
 /// </summary>
 [Collection("Database")]
-public class AdminLogSearchQueryTests
+public class AdminLogSearchQueryTests(DatabaseFixture db)
 {
-    private readonly DatabaseFixture _db;
-
-    public AdminLogSearchQueryTests(DatabaseFixture db)
-    {
-        _db = db;
-    }
-
     // ──────────────────────────────────────────────
     //  Helpers
     // ──────────────────────────────────────────────
@@ -27,7 +20,7 @@ public class AdminLogSearchQueryTests
     {
         var query = AdminLogSearchQuery.Build(filter, limit, offset);
 
-        await using var conn = new NpgsqlConnection(_db.ConnectionString);
+        await using var conn = new NpgsqlConnection(db.ConnectionString);
         await conn.OpenAsync();
 
         await using var cmd = new NpgsqlCommand(query.Sql, conn);
@@ -296,7 +289,7 @@ public class AdminLogSearchQueryTests
     [Fact]
     public async Task ServerIdFilter_ReturnsConsistentServerName()
     {
-        await using var conn = new NpgsqlConnection(_db.ConnectionString);
+        await using var conn = new NpgsqlConnection(db.ConnectionString);
         await conn.OpenAsync();
         await using var cmd = new NpgsqlCommand("SELECT server_id FROM server LIMIT 1", conn);
         var serverId = await cmd.ExecuteScalarAsync();

@@ -4,9 +4,9 @@ using Npgsql;
 namespace SS14.Admin.Tests;
 
 //Grabs the Db form appsettings
-public class DatabaseFixture : IAsyncLifetime
+public abstract class DatabaseFixture : IAsyncLifetime
 {
-    public NpgsqlConnection Connection { get; private set; } = null!;
+    private NpgsqlConnection Connection { get; set; } = null!;
     public string ConnectionString { get; private set; } = null!;
 
     public async Task InitializeAsync()

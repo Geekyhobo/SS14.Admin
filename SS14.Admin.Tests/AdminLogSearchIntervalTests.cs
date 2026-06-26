@@ -10,20 +10,13 @@ namespace SS14.Admin.Tests;
 /// If a query can't complete at a given interval, the SQL needs optimization.
 /// </summary>
 [Collection("Database")]
-public class AdminLogSearchIntervalTests
+public class AdminLogSearchIntervalTests(DatabaseFixture db)
 {
-    private readonly DatabaseFixture _db;
-
-    public AdminLogSearchIntervalTests(DatabaseFixture db)
-    {
-        _db = db;
-    }
-
     private async Task<List<Row>> Execute(LogsFilterModel filter, int limit = 50)
     {
         var query = AdminLogSearchQuery.Build(filter, limit, 0);
 
-        await using var conn = new NpgsqlConnection(_db.ConnectionString);
+        await using var conn = new NpgsqlConnection(db.ConnectionString);
         await conn.OpenAsync();
 
         await using var cmd = new NpgsqlCommand(query.Sql, conn);
@@ -197,7 +190,7 @@ public class AdminLogSearchIntervalTests
     [InlineData(720)]
     public async Task ServerFilter(int hours)
     {
-        await using var conn = new NpgsqlConnection(_db.ConnectionString);
+        await using var conn = new NpgsqlConnection(db.ConnectionString);
         await conn.OpenAsync();
         await using var cmd = new NpgsqlCommand("SELECT server_id FROM server LIMIT 1", conn);
         var serverId = await cmd.ExecuteScalarAsync();
