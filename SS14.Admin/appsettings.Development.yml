@@ -10,7 +10,7 @@ ConnectionStrings:
 # 2. Have this setup below with your Client ID, and Secret
 # Client ID and Secret can be obtained by going to developer settings at https://account.spacestation14.com/
 Auth:
-  Authority: "https://central.spacestation14.com/"
+  Authority: "https://account.spacestation14.com/"
 
 # SECURITY WARNING: Set to FALSE in production!
 # Enables local development bypass authentication
