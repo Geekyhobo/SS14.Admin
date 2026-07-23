@@ -1,20 +1,23 @@
 ﻿@inject NavigationManager Navigation
 
-<div class="md:flex gap-1">
-    <NavLink href="/" class="text-link-1">SS14.Admin</NavLink>
+@*
+    Breadcrumbs.
+*@
+<nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-1 min-w-0">
+    <NavLink href="/" class="text-link-1 focus-ring rounded">SS14.Admin</NavLink>
     @foreach (var crumb in _breadcrumbs)
     {
-        <i class="ri-arrow-right-s-line text-primary-1"></i>
+        <i class="ri-arrow-right-s-line text-primary-1 shrink-0" aria-hidden="true"></i>
         @if (!string.IsNullOrEmpty(crumb.Url))
         {
-            <NavLink href="@crumb.Url" class="text-link-1">@crumb.Name</NavLink>
+            <NavLink href="@crumb.Url" class="text-link-1 truncate focus-ring rounded">@crumb.Name</NavLink>
         }
         else
         {
-            <span class="text-muted-1 cursor-default">@crumb.Name</span>
+            <span class="text-muted-1 cursor-default truncate" aria-current="page">@crumb.Name</span>
         }
     }
-</div>
+</nav>
 
 @code {
 

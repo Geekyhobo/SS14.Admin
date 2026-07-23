@@ -6,9 +6,11 @@
 
 <PageTitle>Bans</PageTitle>
 
-<div class="min-h-screen">
+@* Having min-h-screen here caused a second inner
+   scroll region on mobile and an awkward gap when content was short. *@
+<div class="w-full">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+    <div class="page-header px-4 sm:px-6 pt-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
                 <i class="ri-shield-cross-fill text-red-600 dark:text-red-500"></i>
@@ -39,21 +41,24 @@
     </div>
 
     <!-- Column Visibility Toggles -->
-    <div class="px-4 sm:px-6 mb-4 flex flex-wrap items-center gap-2">
+    <div class="px-4 sm:px-6 mb-4 toolbar">
         <span class="text-sm text-gray-600 dark:text-gray-400 font-medium">Identity fields:</span>
         <button @onclick="() => _showIpColumn = !_showIpColumn"
-                class="inline-flex items-center px-2 py-1 rounded text-xs font-medium transition-colors @(_showIpColumn ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")">
-            <i class="@(_showIpColumn ? "fas fa-check-square mr-1" : "far fa-square mr-1")"></i>
+                aria-pressed="@_showIpColumn"
+                class="inline-flex items-center min-h-touch px-3 py-1.5 rounded text-xs font-medium transition-colors focus-ring @(_showIpColumn ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")">
+            <i class="@(_showIpColumn ? "fas fa-check-square mr-1" : "far fa-square mr-1")" aria-hidden="true"></i>
             IP
         </button>
         <button @onclick="() => _showHwidColumn = !_showHwidColumn"
-                class="inline-flex items-center px-2 py-1 rounded text-xs font-medium transition-colors @(_showHwidColumn ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")">
-            <i class="@(_showHwidColumn ? "fas fa-check-square mr-1" : "far fa-square mr-1")"></i>
+                aria-pressed="@_showHwidColumn"
+                class="inline-flex items-center min-h-touch px-3 py-1.5 rounded text-xs font-medium transition-colors focus-ring @(_showHwidColumn ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")">
+            <i class="@(_showHwidColumn ? "fas fa-check-square mr-1" : "far fa-square mr-1")" aria-hidden="true"></i>
             HWID
         </button>
         <button @onclick="() => _showGuidColumn = !_showGuidColumn"
-                class="inline-flex items-center px-2 py-1 rounded text-xs font-medium transition-colors @(_showGuidColumn ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")">
-            <i class="@(_showGuidColumn ? "fas fa-check-square mr-1" : "far fa-square mr-1")"></i>
+                aria-pressed="@_showGuidColumn"
+                class="inline-flex items-center min-h-touch px-3 py-1.5 rounded text-xs font-medium transition-colors focus-ring @(_showGuidColumn ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")">
+            <i class="@(_showGuidColumn ? "fas fa-check-square mr-1" : "far fa-square mr-1")" aria-hidden="true"></i>
             GUID
         </button>
     </div>
@@ -68,7 +73,9 @@
                        RowClass="@GetRowClass"
                        Class="w-full text-sm">
                 <TemplateColumn Title="Subject" class="px-3 py-3 align-top">
-                    <div class="min-w-[15rem] max-w-[20rem]">
+                    @* Column min-widths gated on sm: so the table can shrink on narrow
+                       screens.*@
+                    <div class="min-w-0 sm:min-w-[15rem] sm:max-w-[20rem]">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">@context.PrimaryName</span>
                             @if (context.AdditionalPlayerCount > 0)
@@ -103,7 +110,7 @@
                 @if (ShowIdentityColumn)
                 {
                     <TemplateColumn Title="Identifiers" class="px-3 py-3 align-top">
-                        <div class="min-w-[18rem] max-w-[26rem] flex flex-wrap gap-1.5">
+                        <div class="min-w-0 sm:min-w-[18rem] sm:max-w-[26rem] flex flex-wrap gap-1.5">
                             @if (_showGuidColumn)
                             {
                                 @foreach (var guid in context.PlayerUserIds)
@@ -135,12 +142,12 @@
                     </TemplateColumn>
                 }
                 <TemplateColumn Title="Reason" class="px-3 py-3 align-top">
-                    <div class="min-w-[16rem] max-w-[28rem]">
+                    <div class="min-w-0 sm:min-w-[16rem] sm:max-w-[28rem]">
                         <div class="text-sm leading-5 text-gray-800 dark:text-gray-200 whitespace-normal break-words">@context.Reason</div>
                     </div>
                 </TemplateColumn>
                 <TemplateColumn Title="Timeline" class="px-3 py-3 align-top">
-                    <div class="min-w-[12rem] space-y-2 text-xs text-gray-600 dark:text-gray-300">
+                    <div class="min-w-0 sm:min-w-[12rem] space-y-2 text-xs text-gray-600 dark:text-gray-300">
                         <div>
                             <div class="font-semibold uppercase tracking-wide text-[10px] text-gray-500 dark:text-gray-400">Banned</div>
                             <div class="mt-0.5 text-sm font-medium text-gray-900 dark:text-gray-100">@context.BanTime.ToString("yyyy-MM-dd HH:mm")</div>
@@ -156,7 +163,7 @@
                     </div>
                 </TemplateColumn>
                 <TemplateColumn Title="Hits" class="px-3 py-3 align-top">
-                    <div class="flex min-w-[5rem] justify-center">
+                    <div class="flex min-w-0 sm:min-w-[5rem] justify-center">
                         @if (context.HitCount > 0)
                         {
                             <NavLink href="@($"/bans/{context.Id}/hits")"

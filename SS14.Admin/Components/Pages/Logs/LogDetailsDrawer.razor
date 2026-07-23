@@ -2,23 +2,22 @@
 @using Content.Shared.Database
 @using SS14.Admin.AdminLogs
 
+@*
+    Log details drawer.
+*@
 @if (IsOpen)
 {
-    <!-- Click anywhere to close overlay -->
-    <div
-        class="fixed inset-0 bg-black/20 dark:bg-black/40 z-40"
-        @onclick="Close">
-    </div>
+    <div class="drawer-overlay" @onclick="Close" aria-hidden="true"></div>
 
-    <!-- Drawer -->
-    <div
-        class="fixed top-0 right-0 h-full w-full max-w-xl bg-white dark:bg-gray-800 shadow-2xl z-50 transform transition-transform duration-300 ease-out overflow-hidden flex flex-col"
-        style="animation: slideInRight 300ms ease-out forwards;">
+    <div class="drawer-panel slide-in-from-right"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="log-drawer-title">
 
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b-2 @ImpactBorderClass @ImpactBgClass">
             <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
+                <h2 id="log-drawer-title" class="text-xl font-bold text-gray-900 dark:text-gray-100">
                     Log Details
                 </h2>
                 @if (LogDetails != null)
@@ -30,9 +29,10 @@
             </div>
             <button
                 type="button"
-                class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                class="touch-target p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus-ring"
+                aria-label="Close log details"
                 @onclick="Close">
-                <i class="ri-close-line text-xl text-gray-700 dark:text-gray-300"></i>
+                <i class="ri-close-line text-xl text-gray-700 dark:text-gray-300" aria-hidden="true"></i>
             </button>
         </div>
 

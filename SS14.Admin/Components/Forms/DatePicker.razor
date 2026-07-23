@@ -1,13 +1,17 @@
-﻿<div id="@_id">
+﻿@*
+    Date range picker. (see DatePicker.razor.js).
+*@
+<div id="@_id" class="w-full">
     <div class="flex items-center gap-1">
-        <button type="button" class="datepicker-toggle px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-l-lg bg-gray-50 dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors">
+        <button type="button" class="datepicker-toggle min-h-touch px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-l-lg bg-gray-50 dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors focus-ring">
             <i class="ri-calendar-2-fill text-gray-600 dark:text-gray-300"></i>
         </button>
-        <input type="text" readonly class="date-display w-52 px-3 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg dark:bg-gray-700 dark:text-gray-100 cursor-pointer text-sm" placeholder="Select date range...">
+        <input type="text" readonly class="date-display w-full sm:max-w-[13rem] px-3 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg dark:bg-gray-700 dark:text-gray-100 cursor-pointer text-sm" placeholder="Select date range...">
     </div>
     <div class="datepicker-container floating-ui hidden
                 bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg
-                w-80 p-3">
+                p-3"
+         style="width: min(20rem, calc(100vw - 1.5rem));">
 
         <div class="flex justify-between items-center pb-2">
             <button type="button" class="prev p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"><i class="ri-arrow-left-s-line text-lg"></i></button>

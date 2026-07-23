@@ -1,43 +1,10 @@
-﻿@using SS14.Admin.Admins
-@using SS14.Admin.Helpers
-
-<nav class="basis-48 px-2 py-4 overflow-auto">
-    <ul class="text-neutral-800">
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.All" href="/" class="nav-link">
-            <i class="ri-dashboard-fill"></i> Dashboard
-        </NavLink></li>
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/bans" class="nav-link">
-            <i class="ri-shield-cross-fill"></i> Bans
-        </NavLink></li>
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/rolebans" class="nav-link">
-            <i class="ri-user-forbid-fill"></i> Role Bans
-        </NavLink></li>
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/players" class="nav-link">
-            <i class="ri-team-fill"></i> Players
-        </NavLink></li>
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/connections" class="nav-link">
-            <i class="ri-links-fill"></i> Connections
-        </NavLink></li>
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/logs" class="nav-link">
-            <i class="ri-file-list-3-fill"></i> Logs
-        </NavLink></li>
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/characters" class="nav-link">
-            <i class="ri-user-star-fill"></i> Characters
-        </NavLink></li>
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/whitelist" class="nav-link">
-            <i class="ri-shield-check-fill"></i> Whitelist
-        </NavLink></li>
-        <AuthorizeView Roles="@AdminFlags.Permissions.RoleName()">
-            <Authorized>
-                <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/permissions" class="nav-link">
-                        <i class="ri-shield-keyhole-fill"></i> Permissions
-                    </NavLink></li>
-            </Authorized>
-        </AuthorizeView>
-        <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/settings" class="nav-link">
-            <i class="ri-settings-3-fill"></i> Settings
-        </NavLink></li>
-    </ul>
+@*
+    Sidebar navigation.
+*@
+<nav id="app-sidebar"
+     class="hidden nav:block nav:flex-none nav:basis-48 nav:w-48 px-2 py-4 overflow-auto"
+     aria-label="Primary navigation">
+    <NavMenuLinks />
 </nav>
 @code {
 

@@ -1,26 +1,37 @@
 ﻿@inject NavigationManager Navigation
 
+@*
+    Quick links dropdown.
+*@
 <div class="relative">
-    <button @onclick="ToggleDropdown" class="flex items-center gap-1 bg-header-secondary text-link-1 px-4 py-2 rounded ">
-        Quick Links
-        <svg class="w-4 h-4 transition-transform @(IsOpen ? "rotate-180" : "rotate-0")" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <button @onclick="ToggleDropdown"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="@IsOpen"
+            class="inline-flex items-center gap-1 bg-header-secondary text-link-1 px-3 sm:px-4 py-2 rounded focus-ring">
+        <span class="hidden sm:inline">Quick Links</span>
+        <span class="sm:hidden" aria-hidden="true"><i class="ri-external-link-line text-lg"></i></span>
+        <svg class="w-4 h-4 transition-transform @(IsOpen ? "rotate-180" : "rotate-0")" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
         </svg>
     </button>
 
-    <div class="@DropdownClass absolute right-0 mt-2 w-48 z-50 opacity-100 transform scale-100 transition duration-200 ease-in-out">
-        <div class="absolute right-0 mt-2 w-48 bg-primary-1 shadow-lg rounded-md z-50">
-            <ul class="py-2 text-text dark:text-text-light">
-                @foreach (var link in Links)
-                {
-                    <li>
-                        <a href="@link.Url" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-link-1">
-                            @link.Name
-                        </a>
-                    </li>
-                }
-            </ul>
-        </div>
+    <div class="@DropdownClass absolute right-0 mt-2 w-44 sm:w-48 bg-primary-1 shadow-lg rounded-md z-50
+                 opacity-100 transform scale-100 transition duration-200 ease-in-out">
+        <ul class="py-2 text-text dark:text-text-light" role="menu">
+            @foreach (var link in Links)
+            {
+                <li role="none">
+                    <a href="@link.Url"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       role="menuitem"
+                       class="block px-4 py-2 text-link-1 focus-ring rounded">
+                        @link.Name
+                    </a>
+                </li>
+            }
+        </ul>
     </div>
 </div>
 

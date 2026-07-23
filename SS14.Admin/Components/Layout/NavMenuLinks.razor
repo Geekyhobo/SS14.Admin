@@ -1,0 +1,72 @@
+@using SS14.Admin.Admins
+@using SS14.Admin.Helpers
+
+<ul class="text-neutral-800">
+    @if (ShowGroups)
+    {
+        <li class="px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">Overview</li>
+    }
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.All" href="/" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-dashboard-fill" aria-hidden="true"></i> Dashboard
+    </NavLink></li>
+
+    @if (ShowGroups)
+    {
+        <li class="mt-3 px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">Moderation</li>
+    }
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/bans" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-shield-cross-fill" aria-hidden="true"></i> Bans
+    </NavLink></li>
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/rolebans" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-user-forbid-fill" aria-hidden="true"></i> Role Bans
+    </NavLink></li>
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/connections" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-links-fill" aria-hidden="true"></i> Connections
+    </NavLink></li>
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/logs" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-file-list-3-fill" aria-hidden="true"></i> Logs
+    </NavLink></li>
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/whitelist" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-shield-check-fill" aria-hidden="true"></i> Whitelist
+    </NavLink></li>
+
+    @if (ShowGroups)
+    {
+        <li class="mt-3 px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">Players & Data</li>
+    }
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/players" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-team-fill" aria-hidden="true"></i> Players
+    </NavLink></li>
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/characters" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-user-star-fill" aria-hidden="true"></i> Characters
+    </NavLink></li>
+
+    @if (ShowGroups)
+    {
+        <li class="mt-3 px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">Administration</li>
+    }
+    <AuthorizeView Roles="@AdminFlags.Permissions.RoleName()">
+        <Authorized>
+            <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/permissions" class="nav-link" @onclick="HandleNavigate">
+                    <i class="ri-shield-keyhole-fill" aria-hidden="true"></i> Permissions
+                </NavLink></li>
+        </Authorized>
+    </AuthorizeView>
+    <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/settings" class="nav-link" @onclick="HandleNavigate">
+        <i class="ri-settings-3-fill" aria-hidden="true"></i> Settings
+    </NavLink></li>
+</ul>
+
+@code {
+    [Parameter]
+    public EventCallback OnNavigate { get; set; }
+
+    [Parameter]
+    public bool ShowGroups { get; set; }
+
+    private async Task HandleNavigate()
+    {
+        if (OnNavigate.HasDelegate)
+            await OnNavigate.InvokeAsync();
+    }
+}

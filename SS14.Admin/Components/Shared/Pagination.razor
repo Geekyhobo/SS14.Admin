@@ -5,7 +5,10 @@
     <Shortcut Code="ArrowRight" Action="OnShortcutRight" />
 </ShortcutHandler>
 
-<div class="@Class flex w-full items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
+@*
+    Pagination control.
+*@
+<div class="@Class flex w-full flex-wrap items-center justify-between gap-3 text-sm text-gray-600 dark:text-gray-400">
     @if (State.TotalItemCount.HasValue)
     {
         <div class="flex-shrink-0">
@@ -14,64 +17,64 @@
                 <p class="font-semibold text-gray-700 dark:text-gray-300"><span class="text-gray-900 dark:text-gray-100">@State.TotalItemCount</span> items</p>
             }
         </div>
-        <div class="flex-grow"></div>
-        <nav role="navigation" class="flex items-center gap-1">
+        <div class="grow"></div>
+        <nav role="navigation" aria-label="Pagination" class="flex items-center gap-1 flex-wrap">
             @if (ShowPerPage)
             {
-                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                <button class="touch-target rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-ring"
                         type="button"
                         @onclick="GoFirstAsync"
                         disabled="@(!CanGoBack)"
                         title="Go to first page"
                         aria-label="Go to first page">
-                    <i class="ri-skip-left-line text-lg"></i>
+                    <i class="ri-skip-left-line text-lg" aria-hidden="true"></i>
                 </button>
-                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                <button class="touch-target rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-ring"
                         type="button"
                         @onclick="GoPreviousAsync"
                         disabled="@(!CanGoBack)"
                         title="Go to previous page"
                         aria-label="Go to previous page">
-                    <i class="ri-arrow-left-s-line text-lg"></i>
+                    <i class="ri-arrow-left-s-line text-lg" aria-hidden="true"></i>
                 </button>
-                <div class="px-3 py-1.5 text-gray-700 dark:text-gray-300 font-medium">
+                <div class="px-3 py-1.5 text-gray-700 dark:text-gray-300 font-medium whitespace-nowrap">
                     Page <strong class="text-gray-900 dark:text-gray-100">@(State.CurrentPageIndex + 1)</strong>
                     of <strong class="text-gray-900 dark:text-gray-100">@(State.LastPageIndex + 1)</strong>
                 </div>
-                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                <button class="touch-target rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-ring"
                         type="button"
                         @onclick="GoNextAsync"
                         disabled="@(!CanGoForwards)"
                         title="Go to next page"
                         aria-label="Go to next page">
-                    <i class="ri-arrow-right-s-line text-lg"></i>
+                    <i class="ri-arrow-right-s-line text-lg" aria-hidden="true"></i>
                 </button>
-                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                <button class="touch-target rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-ring"
                         type="button"
                         @onclick="GoLastAsync"
                         disabled="@(!CanGoForwards)"
                         title="Go to last page"
                         aria-label="Go to last page">
-                    <i class="ri-skip-right-line text-lg"></i>
+                    <i class="ri-skip-right-line text-lg" aria-hidden="true"></i>
                 </button>
             }
             else
             {
-                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                <button class="touch-target rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-ring"
                         type="button"
                         @onclick="GoPreviousAsync"
                         disabled="@(!CanGoBack)"
                         title="Go to previous page"
                         aria-label="Go to previous page">
-                    <i class="ri-arrow-left-s-line text-lg"></i>
+                    <i class="ri-arrow-left-s-line text-lg" aria-hidden="true"></i>
                 </button>
-                <button class="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                <button class="touch-target rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-ring"
                         type="button"
                         @onclick="GoNextAsync"
                         disabled="@(!CanGoForwards)"
                         title="Go to next page"
                         aria-label="Go to next page">
-                    <i class="ri-arrow-right-s-line text-lg"></i>
+                    <i class="ri-arrow-right-s-line text-lg" aria-hidden="true"></i>
                 </button>
             }
         </nav>
@@ -82,9 +85,11 @@
             </InputNumber>
         </div>
         <button @onclick="Refresh"
-                class="h-10 px-4 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-800 text-white rounded-lg font-medium shadow-md transition-all duration-200 flex items-center gap-2"
-                title="Refresh">
-            <i class="ri-refresh-line"></i>
+                type="button"
+                class="touch-target h-10 px-4 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-800 text-white rounded-lg font-medium shadow-md transition-all duration-200 focus-ring"
+                title="Refresh"
+                aria-label="Refresh">
+            <i class="ri-refresh-line" aria-hidden="true"></i>
         </button>
     }
 </div>

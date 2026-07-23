@@ -5,13 +5,183 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+ * GLOBAL CSS VARIABLES
+ * ============================================================ */
+
+body
+{
+    --header-height: 4rem;
+}
+
+html .prose
+{
+    max-width: 85ch;
+}
+
+.prose h2
+{
+    border-bottom: solid 2px black;
+}
+
+.prose h3
+{
+    border-bottom: solid 1px #374151;
+}
+
+/* ============================================================
+ * LAYOUT PRIMITIVES
+ * ============================================================ */
+
+@layer components {
+
+    /* --- App shell --------------------------------------------
+     * The outer wrapper. Provides the column layout
+     */
+    .app-shell
+    {
+        @apply flex flex-col;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+
+    /* Main content area that sits beside / below the sidebar. */
+    .app-main
+    {
+        @apply flex-1 min-w-0 flex;
+    }
+
+    /* --- Page container ---------------------------------------
+     * Used inside <main> for each page's content.
+     */
+    .page-container
+    {
+        @apply min-h-full px-3 sm:px-4 lg:px-6 py-4;
+    }
+
+    .page-header
+    {
+        @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 mb-4;
+    }
+
+    /* --- Filter bar / filter field ----------------------------
+     * Replaces `w-80 / w-48 / w-32` fixed-width inputs. Each
+     */
+    .filter-bar
+    {
+        @apply flex flex-wrap items-end gap-3;
+    }
+
+    .filter-field
+    {
+        @apply flex flex-col gap-1 min-w-0 flex-1 basis-48 sm:basis-56;
+    }
+
+    .filter-field-sm
+    {
+        @apply flex flex-col gap-1 min-w-0 flex-1 basis-28 sm:basis-32;
+    }
+
+    .filter-field-lg
+    {
+        @apply flex flex-col gap-1 min-w-0 flex-1 basis-64 sm:basis-80;
+    }
+
+    .filter-input
+    {
+        @apply w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600
+               rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+               dark:bg-gray-700 dark:text-gray-100;
+    }
+
+    .filter-label
+    {
+        @apply text-sm font-semibold text-gray-700 dark:text-gray-300;
+    }
+
+    /* Consolidated filter submit button */
+    .btn-filter-submit
+    {
+        @apply inline-flex items-center justify-center h-10 px-5 sm:px-6 py-2
+               bg-gradient-to-r from-sky-500 to-sky-600
+               hover:from-sky-600 hover:to-sky-700
+               dark:from-sky-600 dark:to-sky-700
+               dark:hover:from-sky-700 dark:hover:to-sky-800
+               text-white rounded-lg font-medium shadow-md
+               text-sm transition-all duration-200
+               focus-visible:outline-none focus-visible:ring-2
+               focus-visible:ring-sky-500 focus-visible:ring-offset-2
+               dark:focus-visible:ring-offset-gray-900;
+    }
+
+    /* --- Toolbar ---------------------------------------------- */
+    .toolbar
+    {
+        @apply flex flex-wrap items-center gap-2;
+    }
+
+    /* --- Data card -------------------------------------------- */
+    .data-card
+    {
+        @apply bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden;
+    }
+
+    /* --- Drawer / side panel ----------------------------------
+     * Full-width on mobile, constrained on desktop.
+     */
+    .drawer-panel
+    {
+        @apply fixed inset-0 sm:inset-y-0 sm:right-0 sm:left-auto
+               w-full sm:max-w-xl bg-white dark:bg-gray-800
+               shadow-2xl z-50 flex flex-col overflow-hidden;
+    }
+
+    .drawer-overlay
+    {
+        @apply fixed inset-0 bg-black/30 dark:bg-black/50 z-40;
+    }
+
+    /* --- Modal ------------------------------------------------ */
+    .modal-backdrop
+    {
+        @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4;
+    }
+
+    .modal-panel
+    {
+        @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md;
+    }
+
+    /* --- Touch targets & focus ring --------------------------- */
+    .touch-target
+    {
+        @apply inline-flex items-center justify-center min-h-touch min-w-touch;
+    }
+
+    .focus-ring
+    {
+        @apply focus-visible:outline-none focus-visible:ring-2
+               focus-visible:ring-sky-500 focus-visible:ring-offset-2
+               dark:focus-visible:ring-offset-gray-900;
+    }
+}
+
+/* ============================================================
+ * LEGACY UTILITY CLASSES
+ * ============================================================ */
+
 @layer components {
     .active-nav-link {
         @apply !text-rose-600 dark:!text-rose-600
     }
 
     .nav-link {
-        @apply p-2 block rounded dark:text-white dark:hover:bg-stone-800 hover:bg-stone-200 hover:text-rose-600 dark:hover:text-rose-600
+        @apply p-2 block rounded min-h-touch dark:text-white
+               hover:bg-stone-200 hover:text-rose-600
+               dark:hover:bg-stone-800 dark:hover:text-rose-600
+               focus-visible:outline-none focus-visible:ring-2
+               focus-visible:ring-sky-500 focus-visible:ring-offset-2
+               dark:focus-visible:ring-offset-gray-900
     }
 
     .button {
@@ -43,6 +213,10 @@
     }
 
     /* Slide-in animations for side panel */
+    .slide-in-from-left {
+        animation: slideInLeft 300ms ease-out forwards;
+    }
+
     .slide-in-from-right {
         animation: slideInRight 300ms ease-out forwards;
     }
@@ -52,52 +226,24 @@
     }
 }
 
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(0); }
+}
+
 @keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-    }
-    to {
-        transform: translateX(0);
-    }
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0); }
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
-
-
-body
-{
-    --header-height: 4rem;
-}
-
-html .prose
-{
-    max-width: 85ch;
-}
-
-.prose h2
-{
-    border-bottom: solid 2px black;
-}
-
-.prose h3
-{
-    border-bottom: solid 1px #374151;
-}
-
-/*.focus-none:focus, .focus-none:focus-visible
-{
-    outline-width: 0 !important;
-    border-color: transparent !important;
-    box-shadow: none !important;
-}*/
+/* ============================================================
+ * FOCUS OUTLINE (legacy — preserved)
+ * ============================================================ */
 
 .focus-outline:focus-within
 {
@@ -115,6 +261,14 @@ html .prose
     border-color: #2563eb !important;
 }
 
+/* ============================================================
+ * HEADER HEIGHT HELPERS
+ *
+ * `100vh` is the fallback for browsers without dvh support;
+ * the `100dvh` line overrides it when available and prevents
+ * content cropping as the mobile address bar animates.
+ * ============================================================ */
+
 .header-height
 {
     height: var(--header-height);
@@ -128,12 +282,18 @@ html .prose
 .h-full-content
 {
     height: calc(100vh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
 }
 
 .h-half-content
 {
     height: calc(50vh - var(--header-height));
+    height: calc(50dvh - var(--header-height));
 }
+
+/* ============================================================
+ * LEGACY HAMBURGER MENU TOGGLE
+ * ============================================================ */
 
 #menu-toggle
 {
@@ -154,8 +314,8 @@ html .prose
 
     cursor: pointer;
 
-    opacity: 0; /* hide this */
-    z-index: 2; /* and place it over the hamburger */
+    opacity: 0;
+    z-index: 2;
 
     -webkit-touch-callout: none;
 }
@@ -190,6 +350,10 @@ html .prose
     bottom: -34px;
     background-color: white;
 }
+
+/* ============================================================
+ * BLAZOR ERROR UI
+ * ============================================================ */
 
 #blazor-error-ui {
     background: lightyellow;

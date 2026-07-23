@@ -6,9 +6,9 @@
 
 <PageTitle>Role Bans</PageTitle>
 
-<div class="min-h-screen">
+<div class="w-full">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 px-4 sm:px-6 pt-4">
+    <div class="page-header px-4 sm:px-6 pt-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
                 <i class="ri-user-forbid-fill text-orange-600 dark:text-orange-500"></i>
@@ -68,7 +68,9 @@
                        RowClass="@GetRowClass"
                        Class="w-full text-sm">
                 <TemplateColumn Title="Subject" class="px-3 py-3 align-top">
-                    <div class="min-w-[15rem] max-w-[21rem]">
+                        @* Column min/max widths only apply from sm: so the table can
+                           shrink on narrow screens *@
+                        <div class="min-w-0 sm:min-w-[15rem] sm:max-w-[21rem]">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">@context.PrimaryName</span>
                             @if (context.AdditionalPlayerCount > 0)
@@ -125,7 +127,7 @@
                         var expanded = IsRoleExpanded(context.Id);
                         var hasOverflow = info.TotalCount > 3;
                     }
-                    <div class="min-w-[14rem] max-w-[22rem]">
+                    <div class="min-w-0 sm:min-w-[14rem] sm:max-w-[22rem]">
                         <div class="flex flex-wrap gap-1">
                             @* Department-wide chips*@
                             @foreach (var dept in info.FullDepartments)
@@ -189,7 +191,7 @@
                 @if (ShowIdentityColumn)
                 {
                     <TemplateColumn Title="Identifiers" class="px-3 py-3 align-top">
-                        <div class="min-w-[18rem] max-w-[26rem] flex flex-wrap gap-1.5">
+                        <div class="min-w-0 sm:min-w-[18rem] sm:max-w-[26rem] flex flex-wrap gap-1.5">
                             @if (_showGuidColumn)
                             {
                                 @foreach (var guid in context.PlayerUserIds)
@@ -221,12 +223,12 @@
                     </TemplateColumn>
                 }
                 <TemplateColumn Title="Reason" class="px-3 py-3 align-top">
-                    <div class="min-w-[16rem] max-w-[26rem]">
+                    <div class="min-w-0 sm:min-w-[16rem] sm:max-w-[26rem]">
                         <div class="text-sm leading-5 text-gray-800 dark:text-gray-200 whitespace-normal break-words">@context.Reason</div>
                     </div>
                 </TemplateColumn>
                 <TemplateColumn Title="Timeline" class="px-3 py-3 align-top">
-                    <div class="min-w-[11rem] space-y-1 text-xs">
+                    <div class="min-w-0 sm:min-w-[11rem] space-y-1 text-xs">
                         <div class="flex items-baseline gap-1.5">
                             <span class="font-semibold uppercase tracking-wide text-[10px] text-gray-400 dark:text-gray-500 w-12 shrink-0">Ban</span>
                             <span class="text-[13px] font-medium text-gray-900 dark:text-gray-100">@context.BanTime.ToString("yyyy-MM-dd HH:mm")</span>
@@ -242,7 +244,7 @@
                     </div>
                 </TemplateColumn>
                 <TemplateColumn Title="Actions" class="px-3 py-3 align-top whitespace-nowrap">
-                    <div class="flex justify-center min-w-[5.5rem]">
+                    <div class="flex justify-center min-w-0 sm:min-w-[5.5rem]">
                     @if (context.Active)
                     {
                         @if (!_confirmations.ContainsKey(context.Id) || !_confirmations[context.Id])

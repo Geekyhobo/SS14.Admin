@@ -47,20 +47,20 @@
 
     <!-- Row 3: Status toggles + Search button -->
     <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
-        <div class="flex gap-4 items-center border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 bg-gray-50 dark:bg-gray-700/50">
+        <div class="flex flex-wrap gap-3 items-center border border-gray-200 dark:border-gray-600 rounded-lg px-3 sm:px-4 py-2 bg-gray-50 dark:bg-gray-700/50">
             <span class="font-semibold text-gray-700 dark:text-gray-300 text-sm">Status:</span>
-            <label class="flex items-center gap-2 cursor-pointer">
+            <label class="flex items-center gap-2 cursor-pointer min-h-touch">
                 <InputCheckbox @bind-Value="Filter.ShowActive" id="show-active"
                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800" />
                 <span class="text-sm text-gray-700 dark:text-gray-300">Active</span>
             </label>
-            <label class="flex items-center gap-2 cursor-pointer">
+            <label class="flex items-center gap-2 cursor-pointer min-h-touch">
                 <InputCheckbox @bind-Value="Filter.ShowExpired" id="show-expired"
                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800" />
                 <span class="text-sm text-gray-700 dark:text-gray-300">Expired/Unbanned</span>
             </label>
         </div>
-        <button type="submit" class="inline-flex items-center h-10 px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-800 text-white rounded-lg font-medium shadow-md transition-all duration-200 text-sm">
+        <button type="submit" class="btn-filter-submit">
             <i class="ri-search-line mr-2"></i>Search
         </button>
     </div>

@@ -2,38 +2,97 @@
 @using Content.Server.Database
 @using Microsoft.EntityFrameworkCore
 @inherits LayoutComponentBase
+@implements IDisposable
+@inject IJSRuntime JS
 
-<header class="Header flex gap-x-8 p-2 pl-0 items-center sticky top-0 bg-primary-1 header-height z-20 pl-2">
-        <img class="m-3 h-9 md:block" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
-        <h1 class="sr-only">space station 14 admin panel</h1>
-        <div class="sm:flex focus-outline items-center h-9 border dark:border-neutral-400 px-2 rounded-full">
-            <div class="ri-search-line text-lg text-primary-1"></div>
-            <input type="text" class="border-none h-6 appearance-none focus-none !bg-transparent text-muted-1" placeholder="Search" />
+<header class="Header flex flex-wrap items-center gap-x-4 gap-y-2 px-2 sm:px-4 py-2 sticky top-0 bg-primary-1 header-height z-20">
+        <button type="button"
+                class="nav:hidden touch-target rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus-ring"
+                aria-label="Open navigation menu"
+                aria-controls="mobile-navigation-drawer"
+                aria-expanded="@_isMobileNavOpen"
+                @ref="_mobileNavToggleButton"
+                @onclick="ToggleMobileNav">
+            <i class="ri-menu-line text-xl" aria-hidden="true"></i>
+        </button>
+
+        <div class="nav:hidden min-w-0 flex items-center">
+            <span class="truncate text-sm font-semibold text-gray-700 dark:text-gray-200">@CurrentMobilePageLabel</span>
         </div>
-        <Breadcrumbs />
+
+        <a href="/" class="flex items-center gap-2 focus-ring rounded" aria-label="SS14 Admin home">
+            <img class="m-1 h-9" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
+        </a>
+        <h1 class="sr-only">space station 14 admin panel</h1>
+
+        <div class="hidden sm:flex focus-outline items-center h-9 border dark:border-neutral-400 px-2 rounded-full min-w-0 flex-shrink">
+            <div class="ri-search-line text-lg text-primary-1"></div>
+            <input type="text" class="border-none h-6 appearance-none focus-none !bg-transparent text-muted-1 min-w-0" placeholder="Search" aria-label="Search" />
+        </div>
+
+        @* Breadcrumbs only from md up — they overflow on tablets otherwise. *@
+        <div class="hidden md:flex min-w-0">
+            <Breadcrumbs />
+        </div>
+
         <div class="grow"></div>
-        <div class="mr-3 flex gap-x-2 items-center">
+
+        @* Account + quick links. On mobile this group wraps to its own row. *@
+        <div class="flex items-center gap-x-2 order-3 sm:order-none">
             <QuickLinksDropdown />
-            <div class="flex flex-col gap-0">
-                <NavLink href="/settings" class="font-semibold text-link-1 leading-tight">@adminUsername</NavLink>
+            <div class="hidden sm:flex flex-col gap-0 min-w-0">
+                <NavLink href="/settings" class="font-semibold text-link-1 leading-tight truncate max-w-[12rem] focus-ring rounded">@adminUsername</NavLink>
                 @if (!string.IsNullOrEmpty(adminSubtitle))
                 {
-                    <span class="text-xs text-muted-1 leading-tight">@adminSubtitle</span>
+                    <span class="text-xs text-muted-1 leading-tight truncate max-w-[12rem]">@adminSubtitle</span>
                 }
             </div>
-            <NavLink href="/Login/Logout" class="text-link-1">Logout</NavLink>
-            <!--<img class="rounded-full h-8 w-8" height="32" alt="@placeholder" src="https://i.pravatar.cc/32" width="32">-->
+            <NavLink href="/Login/Logout" class="text-link-1 px-2 focus-ring rounded">Logout</NavLink>
         </div>
-        <div class="flex gap-x-2">
+
+        <div class="flex items-center gap-x-1">
             <PiiToggle />
             <DarkModeToggle />
         </div>
     </header>
 
+    @if (_isMobileNavOpen)
+    {
+        @* Mobile-only navigation drawer. Desktop keeps the existing sidebar. *@
+        <div class="nav:hidden drawer-overlay" @onclick="CloseMobileNav" aria-hidden="true"></div>
+
+        <aside id="mobile-navigation-drawer"
+               class="nav:hidden fixed inset-y-0 left-0 z-50 w-full max-w-xs bg-primary-1 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col"
+               style="animation: slideInLeft 300ms ease-out forwards;"
+               role="dialog"
+               aria-modal="true"
+               aria-labelledby="mobile-navigation-title"
+               tabindex="-1"
+               @onkeydown="HandleMobileNavKeyDown">
+            <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-primary-1 dark:bg-gray-800">
+                <div>
+                    <h2 id="mobile-navigation-title" class="text-lg font-semibold text-gray-900 dark:text-gray-100">Navigation</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Switch pages quickly</p>
+                </div>
+                <button type="button"
+                        class="touch-target rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus-ring"
+                        aria-label="Close navigation menu"
+                        @ref="_mobileNavCloseButton"
+                        @onclick="CloseMobileNav">
+                    <i class="ri-close-line text-xl" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-2 py-4">
+                <NavMenuLinks OnNavigate="HandleDrawerNavigateAsync" ShowGroups="true" />
+            </div>
+        </aside>
+    }
+
     <div class="flex h-full-content bg-secondary-1">
         <NavMenu />
         <CascadingValue Value="Breadcrumbs">
-            <main class="basis-full pt-6 p-8 m-2 rounded overflow-auto bg-primary-1">
+            <main class="flex-1 min-w-0 overflow-auto bg-primary-1 m-2 rounded p-4 sm:p-6 lg:p-8 pt-4 sm:pt-6">
                 <div class="flex w-full h-full gap-4 flex-col">
                     @Body
                 </div>
@@ -53,15 +112,55 @@
     private Task<AuthenticationState>? AuthState { get; set; }
 
     [Inject]
+    private NavigationManager? Navigation { get; set; }
+
+    [Inject]
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     private string adminUsername = string.Empty;
     private string adminSubtitle = string.Empty;
+    private bool _isMobileNavOpen;
+    private bool _wasMobileNavOpen;
+    private bool _returnFocusToToggleOnClose;
+    private ElementReference _mobileNavToggleButton;
+    private ElementReference _mobileNavCloseButton;
 
     public List<Breadcrumb> Breadcrumbs = [];
 
+    private static readonly Dictionary<string, string> MobilePageLabels = new(StringComparer.OrdinalIgnoreCase)
+    {
+        [""] = "Dashboard",
+        ["bans"] = "Bans",
+        ["rolebans"] = "Role Bans",
+        ["players"] = "Players",
+        ["connections"] = "Connections",
+        ["logs"] = "Logs",
+        ["characters"] = "Characters",
+        ["whitelist"] = "Whitelist",
+        ["permissions"] = "Permissions",
+        ["settings"] = "Settings",
+    };
+
+    private string CurrentMobilePageLabel
+    {
+        get
+        {
+            var path = Navigation?.ToBaseRelativePath(Navigation.Uri) ?? string.Empty;
+            var segment = path.Split('?', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty;
+            segment = segment.Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty;
+
+            return MobilePageLabels.TryGetValue(segment, out var label)
+                ? label
+                : string.IsNullOrWhiteSpace(segment)
+                    ? "Dashboard"
+                    : char.ToUpperInvariant(segment[0]) + segment[1..];
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        Navigation!.LocationChanged += OnLocationChanged;
+
         var authState = await AuthState!;
         var user = authState.User;
         adminUsername = user.Identity?.Name ?? string.Empty;
@@ -86,5 +185,82 @@
                 adminSubtitle = adminData.AdminRank.Name;
             }
         }
+    }
+
+    private void ToggleMobileNav()
+    {
+        if (!_isMobileNavOpen)
+            _returnFocusToToggleOnClose = true;
+
+        _isMobileNavOpen = !_isMobileNavOpen;
+    }
+
+    private void CloseMobileNav()
+    {
+        if (!_isMobileNavOpen)
+            return;
+
+        _isMobileNavOpen = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleDrawerNavigateAsync()
+    {
+        _returnFocusToToggleOnClose = false;
+        CloseMobileNav();
+        await Task.CompletedTask;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        if (_isMobileNavOpen)
+        {
+            _returnFocusToToggleOnClose = false;
+            _isMobileNavOpen = false;
+            _ = InvokeAsync(StateHasChanged);
+        }
+
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleMobileNavKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Escape")
+        {
+            _returnFocusToToggleOnClose = true;
+            CloseMobileNav();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_isMobileNavOpen != _wasMobileNavOpen)
+        {
+            if (_isMobileNavOpen)
+            {
+                await JS.InvokeVoidAsync("ss14MobileNav.lockBodyScroll");
+                await JS.InvokeVoidAsync("ss14MobileNav.focusElement", _mobileNavCloseButton);
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("ss14MobileNav.unlockBodyScroll");
+
+                if (_returnFocusToToggleOnClose)
+                {
+                    await JS.InvokeVoidAsync("ss14MobileNav.focusElement", _mobileNavToggleButton);
+                    _returnFocusToToggleOnClose = false;
+                }
+            }
+
+            _wasMobileNavOpen = _isMobileNavOpen;
+        }
+    }
+
+    public void Dispose()
+    {
+        if (Navigation != null)
+            Navigation.LocationChanged -= OnLocationChanged;
+
+        _ = JS.InvokeVoidAsync("ss14MobileNav.unlockBodyScroll");
     }
 }
