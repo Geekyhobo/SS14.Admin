@@ -8,12 +8,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Serilog;
-using SS14.Admin;
+using SS14.Admin.Auth;
 using SS14.Admin.Components;
 using SS14.Admin.Data;
 using SS14.Admin.Helpers;
 using SS14.Admin.Services;
-using SS14.Admin.SignIn;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +28,6 @@ builder.Host.UseSerilog((ctx, cfg) =>
 
 builder.Host.UseSystemd();
 
-builder.Services.AddScoped<SignInManager>();
 builder.Services.AddScoped<LoginHandler>();
 builder.Services.AddScoped<BanHelper>();
 builder.Services.AddScoped<PlayerLocator>();

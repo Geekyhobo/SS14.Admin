@@ -1,4 +1,4 @@
-﻿namespace SS14.Admin.Models;
+namespace SS14.Admin.Models;
 
 public class AdminFilterModel
 {
