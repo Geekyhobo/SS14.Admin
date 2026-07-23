@@ -1249,7 +1249,7 @@ button:disabled {
 
 /* --- App shell --------------------------------------------
      * The outer wrapper. Provides the column layout
-*/
+     */
 
 .app-shell
 {
@@ -1268,7 +1268,9 @@ button:disabled {
   flex: 1 1 0%;
 }
 
-/* --- Page container -------------------------------------*/
+/* --- Page container ---------------------------------------
+     * Used inside <main> for each page's content.
+     */
 
 .page-container
 {
@@ -1316,7 +1318,9 @@ button:disabled {
   }
 }
 
-/* --- Filter bar / filter field ---------------------------*/
+/* --- Filter bar / filter field ----------------------------
+     * Replaces `w-80 / w-48 / w-32` fixed-width inputs. Each
+     */
 
 .filter-bar
 {
@@ -1543,7 +1547,7 @@ button:disabled {
 
 /* --- Drawer / side panel ----------------------------------
      * Full-width on mobile, constrained on desktop.
-*/
+     */
 
 .drawer-panel
 {
@@ -4383,9 +4387,6 @@ html .prose
 
 /* ============================================================
  * LAYOUT PRIMITIVES
- *
- * Responsive building blocks for app shell, pages, filter bars,
- * drawers, modals, and toolbars.
  * ============================================================ */
 
 /* ============================================================
@@ -4423,7 +4424,7 @@ html .prose
 }
 
 /* ============================================================
- * FOCUS OUTLINE
+ * FOCUS OUTLINE (legacy — preserved)
  * ============================================================ */
 
 .focus-outline:focus-within
@@ -4444,6 +4445,10 @@ html .prose
 
 /* ============================================================
  * HEADER HEIGHT HELPERS
+ *
+ * `100vh` is the fallback for browsers without dvh support;
+ * the `100dvh` line overrides it when available and prevents
+ * content cropping as the mobile address bar animates.
  * ============================================================ */
 
 .header-height

@@ -1,5 +1,6 @@
-﻿using Content.Server.Database;
+using Content.Server.Database;
 using Content.Shared.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace SS14.Admin.AdminLogs
 {
@@ -17,7 +18,9 @@ namespace SS14.Admin.AdminLogs
         {
             return tag switch
             {
-                LogFilterTags.Player => AdminLogRepository.FindPlayerByName(context.Player, value).Result?.UserId.ToString(),
+                LogFilterTags.Player => context.Player
+                    .FromSqlRaw("SELECT * FROM player WHERE last_seen_user_name = {0}", value)
+                    .SingleOrDefault()?.UserId.ToString(),
                 LogFilterTags.Type => Enum.TryParse(value, out LogType type) ? Convert.ToInt32(type).ToString() : default,
                 LogFilterTags.Server => value,
                 LogFilterTags.Search => value,
@@ -27,7 +30,9 @@ namespace SS14.Admin.AdminLogs
 
         private static string TextSearchForContext(ServerDbContext context)
         {
-            return context is PostgresServerDbContext ? "to_tsvector('english'::regconfig, a.message) @@ websearch_to_tsquery('english'::regconfig, #)" : " a.message LIKE %#%";
+            return context is PostgresServerDbContext
+                ? "to_tsvector('english'::regconfig, a.message) @@ websearch_to_tsquery('english'::regconfig, #)"
+                : " a.message LIKE %#%";
         }
     }
 }
